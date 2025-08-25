@@ -1,6 +1,18 @@
-build/
-logs/
+# CMake build dirs
+/build
+/CMakeFiles
+/CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Editor/IDE stuff
+.vscode/
+.idea/
+
+# Compiled binaries
 *.o
-*.log
+*.a
+*.so
 *.exe
 *.out
+*.dlt

@@ -8,8 +8,13 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "log.hpp"
+#include "sinks_console.hpp"
+// #include "sinks_dlt.hpp"   // enable later when we can start dlt-daemon
+
 namespace fs = std::filesystem;
 using json = nlohmann::json;
+using namespace ara::log;
 
 // App configuration structure
 struct AppConfig {
@@ -67,6 +72,15 @@ pid_t launch_app(const AppConfig& app) {
 }
 
 int main() {
+
+    LogManager::Instance().SetGlobalIds("ECU1", "EMGR");
+    LogManager::Instance().SetDefaultLevel(LogLevel::kInfo);
+    LogManager::Instance().AddSink(std::make_shared<ConsoleSink>());
+    // LogManager::Instance().AddSink(std::make_shared<DltSink>("Execution Manager")); // when ready
+
+    auto log = Logger::CreateLogger("EM", "Execution Manager");
+    ARA_LOGINFO(log, "Execution Manager starting…");
+
     std::string manifest_dir = "../manifests";
     auto apps = load_manifests(manifest_dir);
 
