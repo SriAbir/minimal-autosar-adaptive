@@ -7,6 +7,34 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(nlohmann_json REQUIRED)
 
+
+#------------SOME/IP(+SD) binding shim-------------#
+
+# vsomeip dependency
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(VSOMEIP REQUIRED vsomeip3)
+
+# Execution Manager
+add_executable(execution_manager em/execution_manager.cpp)
+target_link_libraries(execution_manager PRIVATE nlohmann_json::nlohmann_json)
+
+# SOME/IP shim as library
+add_library(someip_binding
+    com/someip_binding.cpp
+    com/someip_binding.hpp
+)
+target_include_directories(someip_binding PUBLIC com)
+target_link_libraries(someip_binding PUBLIC ${VSOMEIP_LIBRARIES})
+
+# Sensor provider app
+add_executable(someip_provider apps/someip_provider.cpp)
+target_link_libraries(someip_provider PRIVATE someip_binding ${VSOMEIP_LIBRARIES})
+
+# Sensor consumer app
+add_executable(sensor_consumer apps/sensor_consumer.cpp)
+target_link_libraries(sensor_consumer PRIVATE someip_binding ${VSOMEIP_LIBRARIES})
+
+
 # ---------- Logging library ----------
 option(BUILD_WITH_DLT "Build DLT sink (requires libdlt)" ON)
 option(BUILD_LOG_DEMO "Build the logging demo app" ON)
