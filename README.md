@@ -6,10 +6,13 @@ This project implements a minimal version of the AUTOSAR Adaptive Platform's Exe
 - JSON-based manifests
 - App lifecycle control (start-on-boot, on-failure restarts)
 - Dummy app (`sensor_provider`) for demonstration
+- SOME/IP(+SD) binding shim with Provider & Consumer Apps for testing
+
 
 ## Structure
 - `em/`: Execution Manager source
-- `apps/`: Adaptive apps
+- `com/`: SOME/IP(+SD) binding shim source
+- `apps/`: Adaptive, Provider, Consumer apps
 - `manifests/`: App configuration files
 - `build/`: Build output (ignored)
 
@@ -19,3 +22,5 @@ mkdir build && cd build
 cmake ..
 make
 ./execution_manager
+./someip_provider.cpp
+./service_consumer.cpp
