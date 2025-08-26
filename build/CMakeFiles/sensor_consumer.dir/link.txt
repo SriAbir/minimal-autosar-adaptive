@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/sensor_consumer.dir/apps/sensor_consumer.cpp.o -o sensor_consumer  libsomeip_binding.a -lvsomeip3 

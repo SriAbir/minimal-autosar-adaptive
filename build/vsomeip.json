@@ -1,0 +1,28 @@
+{
+  "unicast": "127.0.0.1",
+  "logging": {
+    "level": "debug",
+    "console": "true",
+    "file": "false"
+  },
+  "applications": [
+    { "name": "someip_provider" },
+    { "name": "sensor_consumer" }
+  ],
+  "services": [
+    {
+      "service": "0x1234",
+      "instance": "0x5678",
+      "reliable": true,
+      "eventgroups": [
+        {
+          "eventgroup": "0x01",
+          "events": [ "0x1000" ]
+        }
+      ]
+    }
+  ],
+  "routing": {
+    "enabled": true
+  }
+}

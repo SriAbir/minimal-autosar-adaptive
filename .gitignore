@@ -16,3 +16,4 @@ Makefile
 *.exe
 *.out
 *.dlt
+build/

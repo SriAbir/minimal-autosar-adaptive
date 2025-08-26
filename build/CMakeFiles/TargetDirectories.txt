@@ -1,0 +1,6 @@
+/home/srijita/Projects/autosar_adaptive_minima/build/CMakeFiles/execution_manager.dir
+/home/srijita/Projects/autosar_adaptive_minima/build/CMakeFiles/someip_binding.dir
+/home/srijita/Projects/autosar_adaptive_minima/build/CMakeFiles/someip_provider.dir
+/home/srijita/Projects/autosar_adaptive_minima/build/CMakeFiles/sensor_consumer.dir
+/home/srijita/Projects/autosar_adaptive_minima/build/CMakeFiles/edit_cache.dir
+/home/srijita/Projects/autosar_adaptive_minima/build/CMakeFiles/rebuild_cache.dir

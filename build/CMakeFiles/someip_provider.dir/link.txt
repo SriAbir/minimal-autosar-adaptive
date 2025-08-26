@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/someip_provider.dir/apps/someip_provider.cpp.o -o someip_provider  libsomeip_binding.a -lvsomeip3 
