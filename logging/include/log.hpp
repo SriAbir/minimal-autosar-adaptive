@@ -131,7 +131,7 @@ public:
   void LogF(LogLevel lvl, const char* file, uint32_t line, std::string_view fmt, Args&&... args) {
     if (!ShouldLog(lvl)) return;
     std::ostringstream oss;
-    FormatInto(oss, fmt, std::forward<Args>(args)...);
+    FormatInto(oss, fmt, std::forward<Args>(args)...); //
     Log(lvl, oss.str(), file, line);
   }
 
@@ -192,5 +192,7 @@ private:
 #define ARA_LOGINFO(lg,  fmt, ...)   (lg).InfoF (__FILE__, __LINE__, (fmt), ##__VA_ARGS__)
 #define ARA_LOGDEBUG(lg, fmt, ...)   (lg).DebugF(__FILE__, __LINE__, (fmt), ##__VA_ARGS__)
 #define ARA_LOGVERBOSE(lg, fmt, ...) (lg).VerboseF(__FILE__, __LINE__, (fmt), ##__VA_ARGS__)
+
+//Ola: Check if possible to use source info / src info type instead.
 
 } // namespace ara::log

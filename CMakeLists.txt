@@ -7,6 +7,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(nlohmann_json REQUIRED)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)  # <- important for IntelliSense
+
+add_subdirectory(persistency)
+add_subdirectory(em)
+
 
 #------------SOME/IP(+SD) binding shim-------------#
 
@@ -14,9 +19,9 @@ find_package(nlohmann_json REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(VSOMEIP REQUIRED vsomeip3)
 
-# Execution Manager
-add_executable(execution_manager em/execution_manager.cpp)
-target_link_libraries(execution_manager PRIVATE nlohmann_json::nlohmann_json)
+# Execution Manager (moved to CMakeLists.txt under em/-folder)
+#add_executable(execution_manager em/execution_manager.cpp)
+#target_link_libraries(execution_manager PRIVATE nlohmann_json::nlohmann_json)
 
 # SOME/IP shim as library
 add_library(someip_binding
@@ -66,15 +71,36 @@ if (BUILD_LOG_DEMO)
   target_link_libraries(log_demo PRIVATE logging)
 endif()
 
-# ---------- Our existing execution_manager ----------
+# ---------- Execution_manager ----------
 add_executable(execution_manager
   em/execution_manager.cpp
 )
 target_link_libraries(execution_manager
   PRIVATE
+    persistency
     nlohmann_json::nlohmann_json
     logging                # <-- link the logging lib
 )
+
+# --- Persistency ---
+# --- Library and Include Directories ---
+add_library(persistency STATIC
+  persistency/src/storage_registry.cpp
+  persistency/src/key_value_storage_backend.cpp
+  persistency/src/key_value_storage_facade.cpp
+  persistency/src/file_storage.cpp
+)
+
+# --- JSON support ---
+find_package(nlohmann_json REQUIRED)
+target_link_libraries(persistency PUBLIC nlohmann_json::nlohmann_json)
+
+target_include_directories(persistency PUBLIC
+  ${CMAKE_SOURCE_DIR}/include                 # gives <ara/...>
+  ${CMAKE_SOURCE_DIR}/persistency/include     # gives <persistency/...>
+)
+
+# json stuff moved to persistency level CMakeLists
 
 # ---- Testing ----
 include(CTest)  # defines BUILD_TESTING (ON by default)
@@ -98,12 +124,34 @@ if (BUILD_TESTING)
       GTest::gtest_main
   )
 
+  add_executable(persistency_tests
+    tests/test_persistency.cpp
+  )
+
+  target_link_libraries(persistency_tests
+    PRIVATE
+      persistency
+      GTest::gtest_main
+  )
+
+  target_include_directories(persistency_tests PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/persistency/include
+  )
+
   target_include_directories(logging_tests PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/logging/include
   )
 
+  set(PERSIST_MANIFEST "${CMAKE_SOURCE_DIR}/manifests/persistency.json")
+  target_compile_definitions(persistency_tests PRIVATE K_MANIFEST_PATH="${PERSIST_MANIFEST}")
+
   include(GoogleTest)
   gtest_discover_tests(logging_tests)
+  gtest_discover_tests(persistency_tests
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    PROPERTIES TIMEOUT 20         # seconds per test
+    DISCOVERY_TIMEOUT 60
+  )
 endif()
 
 

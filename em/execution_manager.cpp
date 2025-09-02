@@ -10,11 +10,15 @@
 
 #include "log.hpp"
 #include "sinks_console.hpp"
+#include <persistency/storage_registry.hpp>
+
 // #include "sinks_dlt.hpp"   // enable later when we can start dlt-daemon
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
 using namespace ara::log;
+using persistency::StorageRegistry;
+using persistency::StorageType;
 
 // App configuration structure
 struct AppConfig {
@@ -73,6 +77,15 @@ pid_t launch_app(const AppConfig& app) {
 
 int main() {
 
+    std::string manifest_dir = "../manifests";
+    std::string config_path  = manifest_dir + "/persistency.json";
+
+    auto r = persistency::StorageRegistry::Instance().InitFromFile(config_path);
+    if (!r.HasValue()) {
+        std::cerr << "[EM] Failed to load persistency registry from " << config_path << "\n";
+        return 1;
+    }
+    
     LogManager::Instance().SetGlobalIds("ECU1", "EMGR");
     LogManager::Instance().SetDefaultLevel(LogLevel::kInfo);
     LogManager::Instance().AddSink(std::make_shared<ConsoleSink>());
@@ -81,7 +94,6 @@ int main() {
     auto log = Logger::CreateLogger("EM", "Execution Manager");
     ARA_LOGINFO(log, "Execution Manager starting…");
 
-    std::string manifest_dir = "../manifests";
     auto apps = load_manifests(manifest_dir);
 
     std::map<pid_t, AppConfig> running_apps;

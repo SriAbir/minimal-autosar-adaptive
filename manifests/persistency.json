@@ -1,0 +1,32 @@
+{
+  "storages": [
+    {
+      "instance_spec": "EM/FS/State",
+      "type": "files",
+      "base_path": "persist/files/EM/state",
+      "quota_bytes": 10485760,
+      "recover_on_start": true
+    },
+    {
+      "instance_spec": "EM/KV/Settings",
+      "type": "kv",
+      "base_path": "persist/kv/EM/settings",
+      "quota_bytes": 1048576,
+      "recover_on_start": true
+    },
+    {
+      "instance_spec": "ExampleApp/KV/Main",
+      "type": "kv",
+      "base_path": "persist/kv/ExampleApp/main",
+      "quota_bytes": 10485760,
+      "recover_on_start": false
+    },
+    {
+      "instance_spec": "ExampleApp/FS/Data",
+      "type": "files",
+      "base_path": "persist/files/ExampleApp/data",
+      "quota_bytes": 52428800,
+      "recover_on_start": false
+    }
+  ]
+}
