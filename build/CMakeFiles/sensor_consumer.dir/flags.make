@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/benkewille/src/minimal-autosar-adaptive/com
+CXX_INCLUDES = -I/home/benkewille/src/minimal-autosar-adaptive/include -I/home/benkewille/src/minimal-autosar-adaptive -I/home/benkewille/src/minimal-autosar-adaptive/com
 
-CXX_FLAGS = -std=gnu++17
+CXX_FLAGS = -Wall -Wextra -Wpedantic -std=gnu++17
 

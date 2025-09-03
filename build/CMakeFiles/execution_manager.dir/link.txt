@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/execution_manager.dir/em/execution_manager.cpp.o -o execution_manager  libpersistency.a liblogging.a /usr/lib/x86_64-linux-gnu/libdlt.so 
+/usr/bin/c++ CMakeFiles/execution_manager.dir/em/execution_manager.cpp.o CMakeFiles/execution_manager.dir/phm/src/phm_supervisor.cpp.o -o execution_manager  -Wl,-rpath,/usr/local/lib libpersistency.a liblogging.a libsomeip_binding.a libphm_core.a /usr/lib/x86_64-linux-gnu/libdlt.so /usr/local/lib/libvsomeip3.so 

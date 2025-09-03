@@ -559,7 +559,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=6
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -676,7 +676,7 @@ _Python3_EXECUTABLE:INTERNAL=/usr/bin/python3.10
 //Python3 Properties
 _Python3_INTERPRETER_PROPERTIES:INTERNAL=Python;3;10;12;64;;cpython-310-x86_64-linux-gnu;/usr/lib/python3.10;/usr/lib/python3.10;/usr/lib/python3/dist-packages;/usr/lib/python3/dist-packages
 _Python3_INTERPRETER_SIGNATURE:INTERNAL=b91b4035ecb3bb3f5760d35922531bcd
-__pkg_config_arguments_VSOMEIP:INTERNAL=REQUIRED;vsomeip3
+__pkg_config_arguments_VSOMEIP:INTERNAL=REQUIRED;IMPORTED_TARGET;vsomeip3
 __pkg_config_checked_VSOMEIP:INTERNAL=1
 cmake_package_name:INTERNAL=GTest
 generated_dir:INTERNAL=/home/benkewille/src/minimal-autosar-adaptive/build/_deps/googletest-build/googletest/generated

@@ -8,9 +8,16 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "log.hpp"
-#include "sinks_console.hpp"
+#include <log.hpp>
+#include <sinks_console.hpp>
 #include <persistency/storage_registry.hpp>
+#include "someip_binding.hpp"
+#include <vsomeip/vsomeip.hpp>
+#include <phm/phm_ids.hpp>
+#include <phm/phm_supervisor.hpp>
+#include <arpa/inet.h>
+#include <cstring>
+
 
 // #include "sinks_dlt.hpp"   // enable later when we can start dlt-daemon
 
@@ -75,6 +82,38 @@ pid_t launch_app(const AppConfig& app) {
     }
 }
 
+static void register_phm_handlers(PhmSupervisor& phm) {
+    someip::register_rpc_handler(
+        [&](uint16_t sid, uint16_t iid, uint16_t mid,
+            const std::string& payload,
+            std::shared_ptr<vsomeip::message> req) {
+
+            if (sid != phm_ids::kService || iid != phm_ids::kInstance) return;
+
+            switch (mid) {
+                case phm_ids::kAlive:
+                    phm.on_alive();
+                    someip::send_response(req);
+                    break;
+
+                case phm_ids::kCheckpoint:
+                    if (payload.size() == 4) {
+                        uint32_t cp;
+                        std::memcpy(&cp, payload.data(), 4);
+                        cp = ntohl(cp);
+                        phm.on_checkpoint(cp);
+                    }
+                    someip::send_response(req);
+                    break;
+
+                default:
+                    someip::send_response(req);
+                    break;
+            }
+        }
+    );
+}
+
 int main() {
 
     std::string manifest_dir = "../manifests";
@@ -93,6 +132,14 @@ int main() {
 
     auto log = Logger::CreateLogger("EM", "Execution Manager");
     ARA_LOGINFO(log, "Execution Manager starting…");
+
+    //Health management phm stuff
+    someip::init("phm_supervisor"); // start vsomeip
+    someip::offer_service(phm_ids::kService, phm_ids::kInstance, /*event_id*/ 0x0100, /*event_group_id*/ 0x0001);
+    
+    PhmSupervisor phm;
+    register_phm_handlers(phm);
+    phm.maintenance_tick(); //TODO: Only once, add loop
 
     auto apps = load_manifests(manifest_dir);
 

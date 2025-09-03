@@ -93,6 +93,7 @@ sensor_consumer_EXTERNAL_OBJECTS =
 sensor_consumer: CMakeFiles/sensor_consumer.dir/apps/sensor_consumer.cpp.o
 sensor_consumer: CMakeFiles/sensor_consumer.dir/build.make
 sensor_consumer: libsomeip_binding.a
+sensor_consumer: /usr/local/lib/libvsomeip3.so
 sensor_consumer: CMakeFiles/sensor_consumer.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable sensor_consumer"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sensor_consumer.dir/link.txt --verbose=$(VERBOSE)

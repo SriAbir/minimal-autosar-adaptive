@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/someip_provider.dir/apps/someip_provider.cpp.o -o someip_provider  libsomeip_binding.a -lvsomeip3 
+/usr/bin/c++ CMakeFiles/someip_provider.dir/apps/someip_provider.cpp.o -o someip_provider  -Wl,-rpath,/usr/local/lib libsomeip_binding.a /usr/local/lib/libvsomeip3.so 

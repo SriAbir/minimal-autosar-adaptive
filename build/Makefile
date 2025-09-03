@@ -185,32 +185,6 @@ someip_binding/fast:
 .PHONY : someip_binding/fast
 
 #=============================================================================
-# Target rules for targets named someip_provider
-
-# Build rule for target.
-someip_provider: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 someip_provider
-.PHONY : someip_provider
-
-# fast build rule for target.
-someip_provider/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/someip_provider.dir/build.make CMakeFiles/someip_provider.dir/build
-.PHONY : someip_provider/fast
-
-#=============================================================================
-# Target rules for targets named sensor_consumer
-
-# Build rule for target.
-sensor_consumer: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sensor_consumer
-.PHONY : sensor_consumer
-
-# fast build rule for target.
-sensor_consumer/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sensor_consumer.dir/build.make CMakeFiles/sensor_consumer.dir/build
-.PHONY : sensor_consumer/fast
-
-#=============================================================================
 # Target rules for targets named logging
 
 # Build rule for target.
@@ -237,6 +211,45 @@ log_demo/fast:
 .PHONY : log_demo/fast
 
 #=============================================================================
+# Target rules for targets named persistency
+
+# Build rule for target.
+persistency: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 persistency
+.PHONY : persistency
+
+# fast build rule for target.
+persistency/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/persistency.dir/build.make CMakeFiles/persistency.dir/build
+.PHONY : persistency/fast
+
+#=============================================================================
+# Target rules for targets named ara_phm
+
+# Build rule for target.
+ara_phm: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ara_phm
+.PHONY : ara_phm
+
+# fast build rule for target.
+ara_phm/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_phm.dir/build.make CMakeFiles/ara_phm.dir/build
+.PHONY : ara_phm/fast
+
+#=============================================================================
+# Target rules for targets named phm_core
+
+# Build rule for target.
+phm_core: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phm_core
+.PHONY : phm_core
+
+# fast build rule for target.
+phm_core/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_core.dir/build.make CMakeFiles/phm_core.dir/build
+.PHONY : phm_core/fast
+
+#=============================================================================
 # Target rules for targets named execution_manager
 
 # Build rule for target.
@@ -250,17 +263,30 @@ execution_manager/fast:
 .PHONY : execution_manager/fast
 
 #=============================================================================
-# Target rules for targets named persistency
+# Target rules for targets named someip_provider
 
 # Build rule for target.
-persistency: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 persistency
-.PHONY : persistency
+someip_provider: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 someip_provider
+.PHONY : someip_provider
 
 # fast build rule for target.
-persistency/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/persistency.dir/build.make CMakeFiles/persistency.dir/build
-.PHONY : persistency/fast
+someip_provider/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/someip_provider.dir/build.make CMakeFiles/someip_provider.dir/build
+.PHONY : someip_provider/fast
+
+#=============================================================================
+# Target rules for targets named sensor_consumer
+
+# Build rule for target.
+sensor_consumer: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sensor_consumer
+.PHONY : sensor_consumer
+
+# fast build rule for target.
+sensor_consumer/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sensor_consumer.dir/build.make CMakeFiles/sensor_consumer.dir/build
+.PHONY : sensor_consumer/fast
 
 #=============================================================================
 # Target rules for targets named Experimental
@@ -653,6 +679,19 @@ persistency_tests/fast:
 .PHONY : persistency_tests/fast
 
 #=============================================================================
+# Target rules for targets named phm_supervisor_tests
+
+# Build rule for target.
+phm_supervisor_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 phm_supervisor_tests
+.PHONY : phm_supervisor_tests
+
+# fast build rule for target.
+phm_supervisor_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_supervisor_tests.dir/build.make CMakeFiles/phm_supervisor_tests.dir/build
+.PHONY : phm_supervisor_tests/fast
+
+#=============================================================================
 # Target rules for targets named gmock
 
 # Build rule for target.
@@ -968,6 +1007,57 @@ persistency/src/storage_registry.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/persistency.dir/build.make CMakeFiles/persistency.dir/persistency/src/storage_registry.cpp.s
 .PHONY : persistency/src/storage_registry.cpp.s
 
+phm/src/phm_supervisor.o: phm/src/phm_supervisor.cpp.o
+.PHONY : phm/src/phm_supervisor.o
+
+# target to build an object file
+phm/src/phm_supervisor.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_core.dir/build.make CMakeFiles/phm_core.dir/phm/src/phm_supervisor.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/execution_manager.dir/build.make CMakeFiles/execution_manager.dir/phm/src/phm_supervisor.cpp.o
+.PHONY : phm/src/phm_supervisor.cpp.o
+
+phm/src/phm_supervisor.i: phm/src/phm_supervisor.cpp.i
+.PHONY : phm/src/phm_supervisor.i
+
+# target to preprocess a source file
+phm/src/phm_supervisor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_core.dir/build.make CMakeFiles/phm_core.dir/phm/src/phm_supervisor.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/execution_manager.dir/build.make CMakeFiles/execution_manager.dir/phm/src/phm_supervisor.cpp.i
+.PHONY : phm/src/phm_supervisor.cpp.i
+
+phm/src/phm_supervisor.s: phm/src/phm_supervisor.cpp.s
+.PHONY : phm/src/phm_supervisor.s
+
+# target to generate assembly for a file
+phm/src/phm_supervisor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_core.dir/build.make CMakeFiles/phm_core.dir/phm/src/phm_supervisor.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/execution_manager.dir/build.make CMakeFiles/execution_manager.dir/phm/src/phm_supervisor.cpp.s
+.PHONY : phm/src/phm_supervisor.cpp.s
+
+phm/src/supervision_client.o: phm/src/supervision_client.cpp.o
+.PHONY : phm/src/supervision_client.o
+
+# target to build an object file
+phm/src/supervision_client.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_phm.dir/build.make CMakeFiles/ara_phm.dir/phm/src/supervision_client.cpp.o
+.PHONY : phm/src/supervision_client.cpp.o
+
+phm/src/supervision_client.i: phm/src/supervision_client.cpp.i
+.PHONY : phm/src/supervision_client.i
+
+# target to preprocess a source file
+phm/src/supervision_client.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_phm.dir/build.make CMakeFiles/ara_phm.dir/phm/src/supervision_client.cpp.i
+.PHONY : phm/src/supervision_client.cpp.i
+
+phm/src/supervision_client.s: phm/src/supervision_client.cpp.s
+.PHONY : phm/src/supervision_client.s
+
+# target to generate assembly for a file
+phm/src/supervision_client.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_phm.dir/build.make CMakeFiles/ara_phm.dir/phm/src/supervision_client.cpp.s
+.PHONY : phm/src/supervision_client.cpp.s
+
 tests/test_logging.o: tests/test_logging.cpp.o
 .PHONY : tests/test_logging.o
 
@@ -1016,6 +1106,30 @@ tests/test_persistency.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/persistency_tests.dir/build.make CMakeFiles/persistency_tests.dir/tests/test_persistency.cpp.s
 .PHONY : tests/test_persistency.cpp.s
 
+tests/test_phm_supervisor.o: tests/test_phm_supervisor.cpp.o
+.PHONY : tests/test_phm_supervisor.o
+
+# target to build an object file
+tests/test_phm_supervisor.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_supervisor_tests.dir/build.make CMakeFiles/phm_supervisor_tests.dir/tests/test_phm_supervisor.cpp.o
+.PHONY : tests/test_phm_supervisor.cpp.o
+
+tests/test_phm_supervisor.i: tests/test_phm_supervisor.cpp.i
+.PHONY : tests/test_phm_supervisor.i
+
+# target to preprocess a source file
+tests/test_phm_supervisor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_supervisor_tests.dir/build.make CMakeFiles/phm_supervisor_tests.dir/tests/test_phm_supervisor.cpp.i
+.PHONY : tests/test_phm_supervisor.cpp.i
+
+tests/test_phm_supervisor.s: tests/test_phm_supervisor.cpp.s
+.PHONY : tests/test_phm_supervisor.s
+
+# target to generate assembly for a file
+tests/test_phm_supervisor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_supervisor_tests.dir/build.make CMakeFiles/phm_supervisor_tests.dir/tests/test_phm_supervisor.cpp.s
+.PHONY : tests/test_phm_supervisor.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1057,6 +1171,7 @@ help:
 	@echo "... NightlySubmit"
 	@echo "... NightlyTest"
 	@echo "... NightlyUpdate"
+	@echo "... ara_phm"
 	@echo "... execution_manager"
 	@echo "... gmock"
 	@echo "... gmock_main"
@@ -1067,6 +1182,8 @@ help:
 	@echo "... logging_tests"
 	@echo "... persistency"
 	@echo "... persistency_tests"
+	@echo "... phm_core"
+	@echo "... phm_supervisor_tests"
 	@echo "... sensor_consumer"
 	@echo "... someip_binding"
 	@echo "... someip_provider"
@@ -1103,12 +1220,21 @@ help:
 	@echo "... persistency/src/storage_registry.o"
 	@echo "... persistency/src/storage_registry.i"
 	@echo "... persistency/src/storage_registry.s"
+	@echo "... phm/src/phm_supervisor.o"
+	@echo "... phm/src/phm_supervisor.i"
+	@echo "... phm/src/phm_supervisor.s"
+	@echo "... phm/src/supervision_client.o"
+	@echo "... phm/src/supervision_client.i"
+	@echo "... phm/src/supervision_client.s"
 	@echo "... tests/test_logging.o"
 	@echo "... tests/test_logging.i"
 	@echo "... tests/test_logging.s"
 	@echo "... tests/test_persistency.o"
 	@echo "... tests/test_persistency.i"
 	@echo "... tests/test_persistency.s"
+	@echo "... tests/test_phm_supervisor.o"
+	@echo "... tests/test_phm_supervisor.i"
+	@echo "... tests/test_phm_supervisor.s"
 .PHONY : help
 
 

@@ -93,6 +93,7 @@ someip_provider_EXTERNAL_OBJECTS =
 someip_provider: CMakeFiles/someip_provider.dir/apps/someip_provider.cpp.o
 someip_provider: CMakeFiles/someip_provider.dir/build.make
 someip_provider: libsomeip_binding.a
+someip_provider: /usr/local/lib/libvsomeip3.so
 someip_provider: CMakeFiles/someip_provider.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable someip_provider"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/someip_provider.dir/link.txt --verbose=$(VERBOSE)
