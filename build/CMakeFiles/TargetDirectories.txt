@@ -6,7 +6,8 @@
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/phm_core.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/execution_manager.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/someip_provider.dir
-/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/sensor_consumer.dir
+/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/sensor_provider.dir
+/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/speed_client.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/Experimental.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/Nightly.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/Continuous.dir

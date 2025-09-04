@@ -46,6 +46,7 @@ option(BUILD_LOG_DEMO "Build the logging demo app" ON)
 
 add_library(logging STATIC
   logging/src/sinks_console.cpp
+  logging/src/log.cpp
   logging/src/sinks_dlt.cpp
 )
 target_include_directories(logging PUBLIC
@@ -87,7 +88,7 @@ target_include_directories(persistency PUBLIC
 # ---------- ara_phm client (apps call ReportAlive/Checkpoint) ---------------
 add_library(ara_phm STATIC
   phm/src/supervision_client.cpp
-  #phm/src/phm_supervisor.cpp
+  phm/src/phm_supervisor.cpp
 )
 target_include_directories(ara_phm PUBLIC
   ${CMAKE_SOURCE_DIR}/include
@@ -116,7 +117,7 @@ target_include_directories(phm_core PUBLIC
 # ---------- Execution Manager (PHM server inside) ---------------------------
 add_executable(execution_manager
   em/execution_manager.cpp
-  phm/src/phm_supervisor.cpp
+  #phm/src/phm_supervisor.cpp
 )
 
 target_include_directories(execution_manager PRIVATE
@@ -125,6 +126,15 @@ target_include_directories(execution_manager PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/logging/include
   ${CMAKE_CURRENT_SOURCE_DIR}/persistency/include
   ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+# Common includes used by apps
+set(APP_PUBLIC_INCLUDES
+  ${CMAKE_SOURCE_DIR}/include          # ara/...
+  ${CMAKE_SOURCE_DIR}/logging/include  # log.hpp
+  ${CMAKE_SOURCE_DIR}/persistency/include
+  ${CMAKE_SOURCE_DIR}/phm/include
+  ${CMAKE_SOURCE_DIR}/com
 )
 
 target_link_libraries(execution_manager
@@ -146,8 +156,31 @@ target_link_libraries(someip_provider PRIVATE
   Threads::Threads
 )
 
-add_executable(sensor_consumer apps/sensor_consumer.cpp)
-target_link_libraries(sensor_consumer PRIVATE someip_binding PkgConfig::VSOMEIP Threads::Threads)
+# ----------- Apps for demos / etc. ------------------------------------------
+
+# --- sensor_provider ---
+add_executable(sensor_provider apps/sensor_provider.cpp)
+target_include_directories(sensor_provider PRIVATE ${APP_PUBLIC_INCLUDES})
+target_link_libraries(sensor_provider PRIVATE
+  logging
+  persistency
+  ara_phm
+  someip_binding
+  PkgConfig::VSOMEIP
+  Threads::Threads
+)
+
+# --- speed_client ---
+add_executable(speed_client apps/speed_client.cpp)
+target_include_directories(speed_client PRIVATE ${APP_PUBLIC_INCLUDES})
+target_link_libraries(speed_client PRIVATE
+  logging
+  persistency
+  ara_phm
+  someip_binding
+  PkgConfig::VSOMEIP
+  Threads::Threads
+)
 
 # ============================================================================
 #                                 TESTS
@@ -198,5 +231,32 @@ if (BUILD_TESTING)
   gtest_discover_tests(phm_supervisor_tests
   PROPERTIES TIMEOUT 20
   DISCOVERY_TIMEOUT 60
+
+    # Header-only logic has no target; just include directories
+  target_include_directories(your_tests_or_all_targets PRIVATE
+    ${CMAKE_SOURCE_DIR}                # for apps/ and ara/ etc.
+    ${CMAKE_SOURCE_DIR}/persistency/include
+  )
+
+  # Speed logic tests
+  add_executable(test_speed_logic tests/test_speed_logic.cpp)
+  target_link_libraries(test_speed_logic PRIVATE gtest gtest_main pthread)
+  # Link your persistency objects if they build as a lib; otherwise add sources:
+  # target_link_libraries(test_speed_logic PRIVATE persistency_lib)
+  # or:
+  # target_sources(test_speed_logic PRIVATE
+  #   persistency/src/file_storage.cpp
+  #   persistency/src/key_value_storage_backend.cpp
+  #   persistency/src/key_value_storage_facade.cpp
+  #   persistency/src/storage_registry.cpp
+  # )
+
+  # Sensor logic tests
+  add_executable(test_sensor_logic tests/test_sensor_logic.cpp)
+  target_link_libraries(test_sensor_logic PRIVATE gtest gtest_main pthread)
+
+  add_test(NAME speed_logic COMMAND test_speed_logic)
+  add_test(NAME sensor_logic COMMAND test_sensor_logic)
+
 )
 endif()

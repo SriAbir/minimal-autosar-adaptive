@@ -1,8 +1,0 @@
-{
-  "app_id": "sensor_provider",
-  "executable": "../apps/sensor_provider",
-  "start_on_boot": true,
-  "dependencies": [],
-  "restart_policy": "on-failure",
-  "log_file": "logs/sensor_provider.log"
-}

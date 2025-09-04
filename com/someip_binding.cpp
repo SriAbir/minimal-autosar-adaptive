@@ -2,7 +2,9 @@
 #include <iostream>
 #include <vector>
 #include <mutex>
-#include <thread> 
+#include <thread>
+#include <atomic>   // <- add
+#include <set>      // (you already use std::set)
 
 namespace someip {
 
@@ -11,11 +13,37 @@ std::mutex handler_mutex;
 std::function<void(const std::string&)> global_handler;
 static RpcHandler rpc_handler; // for health manager
 
+// NEW: guard against double init / double start (safe, process-local)
+static std::mutex       g_init_mu;
+static std::atomic_bool g_started{false};
+static std::string      g_app_name;
+
+// NEW: make “auto-subscribe on availability” optional (default OFF)
+static std::atomic_bool g_auto_subscribe{false};
+static std::atomic<uint16_t> g_default_event_group{0x0001};
+
+void enable_auto_subscribe(bool enable, uint16_t event_group_id) {
+    g_auto_subscribe.store(enable, std::memory_order_relaxed);
+    g_default_event_group.store(event_group_id, std::memory_order_relaxed);
+}
+
 void init(const std::string& app_name) {
+    std::lock_guard<std::mutex> lk(g_init_mu);
+
+    // Idempotent: if already initialized, do nothing
+    if (app) {
+        if (g_app_name != app_name) {
+            std::cerr << "[someip] already initialized as '" << g_app_name
+                      << "', ignoring init('" << app_name << "')\n";
+        }
+        return;
+    }
+
+    g_app_name = app_name;
     app = vsomeip::runtime::get()->create_application(app_name);
 
     if (!app->init()) {
-        std::cerr << "[someip] Failed to initialize application" << std::endl;
+        std::cerr << "[someip] Failed to initialize application\n";
         std::exit(1);
     }
 
@@ -51,31 +79,36 @@ void init(const std::string& app_name) {
     );
 
     app->register_availability_handler(
-    vsomeip::ANY_SERVICE,
-    vsomeip::ANY_INSTANCE,
-    [](vsomeip::service_t service,
-       vsomeip::instance_t instance,
-       bool is_available) {
-        if (is_available) {
-            std::cout << "[shim] Service " << std::hex << service << ":" << instance << " is available" << std::endl;
-            app->subscribe(service, instance, 0x01);  // now it's safe
+        vsomeip::ANY_SERVICE,
+        vsomeip::ANY_INSTANCE,
+        [](vsomeip::service_t service,
+           vsomeip::instance_t instance,
+           bool is_available) {
+            if (is_available) {
+                std::cout << "[shim] Service " << std::hex << service << ":" << instance
+                          << " is available" << std::dec << std::endl;
+
+                // CHANGED: only auto-subscribe if explicitly enabled.
+                if (g_auto_subscribe.load(std::memory_order_relaxed)) {
+                    auto eg = g_default_event_group.load(std::memory_order_relaxed);
+                    try {
+                        app->subscribe(service, instance, eg);
+                    } catch (...) {
+                        // swallow errors; availability callbacks can race during startup
+                    }
+                }
+            }
         }
+    );
+
+    // Start vsomeip only once per process
+    if (!g_started.exchange(true)) {
+        std::thread vsomeip_thread([] {
+            app->start();
+        });
+        vsomeip_thread.detach();
     }
-);
-
-
-    //app->start();
-     std::thread vsomeip_thread([] {
-        
-        app->start();
-    });
-    vsomeip_thread.detach();
 }
-
-//void offer_service(uint16_t service_id, uint16_t instance_id) {
-    //app->offer_service(service_id, instance_id);
-   // std::cout << "[someip] Offering service " << std::hex << service_id << ":" << instance_id << std::endl;
-//}
 void offer_service(uint16_t service_id, uint16_t instance_id, uint16_t event_id, uint16_t event_group_id) {
     app->offer_service(service_id, instance_id);
 

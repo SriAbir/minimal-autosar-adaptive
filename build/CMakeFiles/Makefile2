@@ -71,7 +71,8 @@ all: CMakeFiles/ara_phm.dir/all
 all: CMakeFiles/phm_core.dir/all
 all: CMakeFiles/execution_manager.dir/all
 all: CMakeFiles/someip_provider.dir/all
-all: CMakeFiles/sensor_consumer.dir/all
+all: CMakeFiles/sensor_provider.dir/all
+all: CMakeFiles/speed_client.dir/all
 all: CMakeFiles/logging_tests.dir/all
 all: CMakeFiles/persistency_tests.dir/all
 all: CMakeFiles/phm_supervisor_tests.dir/all
@@ -91,7 +92,8 @@ clean: CMakeFiles/ara_phm.dir/clean
 clean: CMakeFiles/phm_core.dir/clean
 clean: CMakeFiles/execution_manager.dir/clean
 clean: CMakeFiles/someip_provider.dir/clean
-clean: CMakeFiles/sensor_consumer.dir/clean
+clean: CMakeFiles/sensor_provider.dir/clean
+clean: CMakeFiles/speed_client.dir/clean
 clean: CMakeFiles/Experimental.dir/clean
 clean: CMakeFiles/Nightly.dir/clean
 clean: CMakeFiles/Continuous.dir/clean
@@ -184,7 +186,7 @@ _deps/googletest-build/googletest/clean: _deps/googletest-build/googletest/CMake
 CMakeFiles/someip_binding.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/someip_binding.dir/build.make CMakeFiles/someip_binding.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/someip_binding.dir/build.make CMakeFiles/someip_binding.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=34,35 "Built target someip_binding"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=35,36 "Built target someip_binding"
 .PHONY : CMakeFiles/someip_binding.dir/all
 
 # Build rule for subdir invocation for target.
@@ -210,12 +212,12 @@ CMakeFiles/someip_binding.dir/clean:
 CMakeFiles/logging.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/logging.dir/build.make CMakeFiles/logging.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/logging.dir/build.make CMakeFiles/logging.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=16,17,18 "Built target logging"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=16,17,18,19 "Built target logging"
 .PHONY : CMakeFiles/logging.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/logging.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/logging.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 0
 .PHONY : CMakeFiles/logging.dir/rule
@@ -241,7 +243,7 @@ CMakeFiles/log_demo.dir/all: CMakeFiles/logging.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/log_demo.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 5
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/log_demo.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 0
 .PHONY : CMakeFiles/log_demo.dir/rule
@@ -262,7 +264,7 @@ CMakeFiles/log_demo.dir/clean:
 CMakeFiles/persistency.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/persistency.dir/build.make CMakeFiles/persistency.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/persistency.dir/build.make CMakeFiles/persistency.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=21,22,23,24,25 "Built target persistency"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=22,23,24,25,26 "Built target persistency"
 .PHONY : CMakeFiles/persistency.dir/all
 
 # Build rule for subdir invocation for target.
@@ -288,12 +290,12 @@ CMakeFiles/persistency.dir/clean:
 CMakeFiles/ara_phm.dir/all: CMakeFiles/someip_binding.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_phm.dir/build.make CMakeFiles/ara_phm.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_phm.dir/build.make CMakeFiles/ara_phm.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=1,2 "Built target ara_phm"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=1,2,3 "Built target ara_phm"
 .PHONY : CMakeFiles/ara_phm.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/ara_phm.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ara_phm.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 0
 .PHONY : CMakeFiles/ara_phm.dir/rule
@@ -314,7 +316,7 @@ CMakeFiles/ara_phm.dir/clean:
 CMakeFiles/phm_core.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_core.dir/build.make CMakeFiles/phm_core.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_core.dir/build.make CMakeFiles/phm_core.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=28,29 "Built target phm_core"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=29,30 "Built target phm_core"
 .PHONY : CMakeFiles/phm_core.dir/all
 
 # Build rule for subdir invocation for target.
@@ -343,7 +345,7 @@ CMakeFiles/execution_manager.dir/all: CMakeFiles/persistency.dir/all
 CMakeFiles/execution_manager.dir/all: CMakeFiles/phm_core.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/execution_manager.dir/build.make CMakeFiles/execution_manager.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/execution_manager.dir/build.make CMakeFiles/execution_manager.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=3,4,5 "Built target execution_manager"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=4,5 "Built target execution_manager"
 .PHONY : CMakeFiles/execution_manager.dir/all
 
 # Build rule for subdir invocation for target.
@@ -369,7 +371,7 @@ CMakeFiles/execution_manager.dir/clean:
 CMakeFiles/someip_provider.dir/all: CMakeFiles/someip_binding.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/someip_provider.dir/build.make CMakeFiles/someip_provider.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/someip_provider.dir/build.make CMakeFiles/someip_provider.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=36,37 "Built target someip_provider"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=37,38 "Built target someip_provider"
 .PHONY : CMakeFiles/someip_provider.dir/all
 
 # Build rule for subdir invocation for target.
@@ -389,30 +391,62 @@ CMakeFiles/someip_provider.dir/clean:
 .PHONY : CMakeFiles/someip_provider.dir/clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/sensor_consumer.dir
+# Target rules for target CMakeFiles/sensor_provider.dir
 
 # All Build rule for target.
-CMakeFiles/sensor_consumer.dir/all: CMakeFiles/someip_binding.dir/all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sensor_consumer.dir/build.make CMakeFiles/sensor_consumer.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sensor_consumer.dir/build.make CMakeFiles/sensor_consumer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=32,33 "Built target sensor_consumer"
-.PHONY : CMakeFiles/sensor_consumer.dir/all
+CMakeFiles/sensor_provider.dir/all: CMakeFiles/someip_binding.dir/all
+CMakeFiles/sensor_provider.dir/all: CMakeFiles/logging.dir/all
+CMakeFiles/sensor_provider.dir/all: CMakeFiles/persistency.dir/all
+CMakeFiles/sensor_provider.dir/all: CMakeFiles/ara_phm.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sensor_provider.dir/build.make CMakeFiles/sensor_provider.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sensor_provider.dir/build.make CMakeFiles/sensor_provider.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=33,34 "Built target sensor_provider"
+.PHONY : CMakeFiles/sensor_provider.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/sensor_consumer.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 4
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/sensor_consumer.dir/all
+CMakeFiles/sensor_provider.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 16
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/sensor_provider.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 0
-.PHONY : CMakeFiles/sensor_consumer.dir/rule
+.PHONY : CMakeFiles/sensor_provider.dir/rule
 
 # Convenience name for target.
-sensor_consumer: CMakeFiles/sensor_consumer.dir/rule
-.PHONY : sensor_consumer
+sensor_provider: CMakeFiles/sensor_provider.dir/rule
+.PHONY : sensor_provider
 
 # clean rule for target.
-CMakeFiles/sensor_consumer.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/sensor_consumer.dir/build.make CMakeFiles/sensor_consumer.dir/clean
-.PHONY : CMakeFiles/sensor_consumer.dir/clean
+CMakeFiles/sensor_provider.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sensor_provider.dir/build.make CMakeFiles/sensor_provider.dir/clean
+.PHONY : CMakeFiles/sensor_provider.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/speed_client.dir
+
+# All Build rule for target.
+CMakeFiles/speed_client.dir/all: CMakeFiles/someip_binding.dir/all
+CMakeFiles/speed_client.dir/all: CMakeFiles/logging.dir/all
+CMakeFiles/speed_client.dir/all: CMakeFiles/persistency.dir/all
+CMakeFiles/speed_client.dir/all: CMakeFiles/ara_phm.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/speed_client.dir/build.make CMakeFiles/speed_client.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/speed_client.dir/build.make CMakeFiles/speed_client.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=39,40 "Built target speed_client"
+.PHONY : CMakeFiles/speed_client.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/speed_client.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 16
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/speed_client.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 0
+.PHONY : CMakeFiles/speed_client.dir/rule
+
+# Convenience name for target.
+speed_client: CMakeFiles/speed_client.dir/rule
+.PHONY : speed_client
+
+# clean rule for target.
+CMakeFiles/speed_client.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/speed_client.dir/build.make CMakeFiles/speed_client.dir/clean
+.PHONY : CMakeFiles/speed_client.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/Experimental.dir
@@ -1151,12 +1185,12 @@ CMakeFiles/logging_tests.dir/all: _deps/googletest-build/googletest/CMakeFiles/g
 CMakeFiles/logging_tests.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/logging_tests.dir/build.make CMakeFiles/logging_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/logging_tests.dir/build.make CMakeFiles/logging_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=19,20 "Built target logging_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=20,21 "Built target logging_tests"
 .PHONY : CMakeFiles/logging_tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/logging_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 9
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 10
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/logging_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles 0
 .PHONY : CMakeFiles/logging_tests.dir/rule
@@ -1179,7 +1213,7 @@ CMakeFiles/persistency_tests.dir/all: _deps/googletest-build/googletest/CMakeFil
 CMakeFiles/persistency_tests.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/persistency_tests.dir/build.make CMakeFiles/persistency_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/persistency_tests.dir/build.make CMakeFiles/persistency_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=26,27 "Built target persistency_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=27,28 "Built target persistency_tests"
 .PHONY : CMakeFiles/persistency_tests.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1207,7 +1241,7 @@ CMakeFiles/phm_supervisor_tests.dir/all: _deps/googletest-build/googletest/CMake
 CMakeFiles/phm_supervisor_tests.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_supervisor_tests.dir/build.make CMakeFiles/phm_supervisor_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_supervisor_tests.dir/build.make CMakeFiles/phm_supervisor_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=30,31 "Built target phm_supervisor_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles --progress-num=31,32 "Built target phm_supervisor_tests"
 .PHONY : CMakeFiles/phm_supervisor_tests.dir/all
 
 # Build rule for subdir invocation for target.

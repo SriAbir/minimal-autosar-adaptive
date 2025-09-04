@@ -1,0 +1,11 @@
+{
+  "app_id": "sensor_provider",
+  "executable": "../build/sensor_provider",
+  "start_on_boot": true,
+  "dependencies": [],
+  "restart_policy": "on-failure",
+  "log_file": "logs/sensor_provider.log",
+  "phm": { "alive_id": 1001, "period_ms": 1000, "required_checkpoints": ["alive"] },
+  "resources": { "persistency_dir": "/var/adaptive/per/demo" },
+  "com": { "someip": { "service_id": 4660, "instance_id": 1 } }
+}

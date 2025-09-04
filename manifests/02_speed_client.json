@@ -1,0 +1,10 @@
+{
+  "app_id": "speed_client",
+  "executable": "../build/speed_client",
+  "start_on_boot": true,
+  "restart_policy": "on-failure",
+  "log_file": "logs/speed_client.log",
+  "phm": { "alive_id": 1002, "period_ms": 1000, "required_checkpoints": ["alive"] },
+  "resources": { "persistency_dir": "/var/adaptive/per/demo" },
+  "com": { "someip": { "service_id": 4660, "instance_id": 1, "subscribe": [32769] } }
+}

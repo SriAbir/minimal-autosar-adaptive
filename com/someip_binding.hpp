@@ -16,6 +16,8 @@ void register_handler(std::function<void(const std::string&)> handler);
 //void subscribe_to_event(uint16_t service_id, uint16_t instance_id, uint16_t event_group_id);
 void request_event(uint16_t service_id, uint16_t instance_id,uint16_t event_id,uint16_t eventgroup_id,bool reliable);
 
+//Trying to fix someip issue. Making init() idempotent
+void enable_auto_subscribe(bool enable, uint16_t event_group_id = 0x0001);
 
 // Additions below for health manager
 void send_request(uint16_t service_id, uint16_t instance_id, uint16_t method_id,
