@@ -167,6 +167,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/someip_binding.dir/DependInfo.cmake"
+  "CMakeFiles/ara_com_adapter_someip.dir/DependInfo.cmake"
   "CMakeFiles/logging.dir/DependInfo.cmake"
   "CMakeFiles/log_demo.dir/DependInfo.cmake"
   "CMakeFiles/persistency.dir/DependInfo.cmake"

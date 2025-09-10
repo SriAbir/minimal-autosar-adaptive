@@ -7,13 +7,13 @@
 #include <sstream>
 #include <ara/core/result.hpp>
 #include <ara/core/instance_specifier.hpp>
-#include <persistency/key_value_storage_backend.hpp>
+#include "persistency/key_value_storage_backend.hpp"
 
 namespace ara::per {
 
 class KeyValueStorage {
 public:
-    explicit KeyValueStorage(std::shared_ptr<persistency::KeyValueStorageBackend> backend)
+    explicit KeyValueStorage(std::shared_ptr<::persistency::KeyValueStorageBackend> backend)
         : backend_(std::move(backend)) {}
 
     template<class T>
@@ -61,7 +61,7 @@ public:
     ara::core::Result<void> DiscardPendingChanges() const noexcept { return backend_->DiscardPendingChanges(); }
 
 private:
-    std::shared_ptr<persistency::KeyValueStorageBackend> backend_;
+    std::shared_ptr<::persistency::KeyValueStorageBackend> backend_;
 };
 
 using SharedHandle = std::shared_ptr<KeyValueStorage>;

@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -DHAVE_DLT -DJSON_DIAGNOSTICS=0 -DJSON_USE_IMPLICIT_CONVERSIONS=1
 
-CXX_INCLUDES = -I/home/benkewille/src/minimal-autosar-adaptive/include -I/home/benkewille/src/minimal-autosar-adaptive -I/home/benkewille/src/minimal-autosar-adaptive/em -I/home/benkewille/src/minimal-autosar-adaptive/phm/include -I/home/benkewille/src/minimal-autosar-adaptive/logging/include -I/home/benkewille/src/minimal-autosar-adaptive/persistency/include -I/home/benkewille/src/minimal-autosar-adaptive/com
+CXX_INCLUDES = -I/home/benkewille/src/minimal-autosar-adaptive/include -I/home/benkewille/src/minimal-autosar-adaptive/em -I/home/benkewille/src/minimal-autosar-adaptive/phm/include -I/home/benkewille/src/minimal-autosar-adaptive/logging/include -I/home/benkewille/src/minimal-autosar-adaptive/persistency/include -I/home/benkewille/src/minimal-autosar-adaptive/apps -I/home/benkewille/src/minimal-autosar-adaptive/com
 
 CXX_FLAGS = -Wall -Wextra -Wpedantic -std=gnu++17
 

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <cmath>
-#include "apps/sensor_logic.hpp"
+#include "sensor_logic.hpp"
 
 TEST(SensorLogic, ComputesExpectedRange) {
   // Values should oscillate between 40 and 60

@@ -185,6 +185,19 @@ someip_binding/fast:
 .PHONY : someip_binding/fast
 
 #=============================================================================
+# Target rules for targets named ara_com_adapter_someip
+
+# Build rule for target.
+ara_com_adapter_someip: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ara_com_adapter_someip
+.PHONY : ara_com_adapter_someip
+
+# fast build rule for target.
+ara_com_adapter_someip/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_com_adapter_someip.dir/build.make CMakeFiles/ara_com_adapter_someip.dir/build
+.PHONY : ara_com_adapter_someip/fast
+
+#=============================================================================
 # Target rules for targets named logging
 
 # Build rule for target.
@@ -828,6 +841,30 @@ apps/speed_client.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/speed_client.dir/build.make CMakeFiles/speed_client.dir/apps/speed_client.cpp.s
 .PHONY : apps/speed_client.cpp.s
 
+ara/com/someip_adapter.o: ara/com/someip_adapter.cpp.o
+.PHONY : ara/com/someip_adapter.o
+
+# target to build an object file
+ara/com/someip_adapter.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_com_adapter_someip.dir/build.make CMakeFiles/ara_com_adapter_someip.dir/ara/com/someip_adapter.cpp.o
+.PHONY : ara/com/someip_adapter.cpp.o
+
+ara/com/someip_adapter.i: ara/com/someip_adapter.cpp.i
+.PHONY : ara/com/someip_adapter.i
+
+# target to preprocess a source file
+ara/com/someip_adapter.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_com_adapter_someip.dir/build.make CMakeFiles/ara_com_adapter_someip.dir/ara/com/someip_adapter.cpp.i
+.PHONY : ara/com/someip_adapter.cpp.i
+
+ara/com/someip_adapter.s: ara/com/someip_adapter.cpp.s
+.PHONY : ara/com/someip_adapter.s
+
+# target to generate assembly for a file
+ara/com/someip_adapter.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_com_adapter_someip.dir/build.make CMakeFiles/ara_com_adapter_someip.dir/ara/com/someip_adapter.cpp.s
+.PHONY : ara/com/someip_adapter.cpp.s
+
 com/someip_binding.o: com/someip_binding.cpp.o
 .PHONY : com/someip_binding.o
 
@@ -1232,6 +1269,7 @@ help:
 	@echo "... NightlySubmit"
 	@echo "... NightlyTest"
 	@echo "... NightlyUpdate"
+	@echo "... ara_com_adapter_someip"
 	@echo "... ara_phm"
 	@echo "... execution_manager"
 	@echo "... gmock"
@@ -1258,6 +1296,9 @@ help:
 	@echo "... apps/speed_client.o"
 	@echo "... apps/speed_client.i"
 	@echo "... apps/speed_client.s"
+	@echo "... ara/com/someip_adapter.o"
+	@echo "... ara/com/someip_adapter.i"
+	@echo "... ara/com/someip_adapter.s"
 	@echo "... com/someip_binding.o"
 	@echo "... com/someip_binding.i"
 	@echo "... com/someip_binding.s"

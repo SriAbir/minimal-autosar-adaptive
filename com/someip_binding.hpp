@@ -36,4 +36,20 @@ void register_rpc_handler(RpcHandler handler);
 void send_response(std::shared_ptr<vsomeip::message> request,
                    const std::string& payload = "");
 
+// Clean detach paths
+void release_service(uint16_t service_id, uint16_t instance_id);
+void stop_offer_service(uint16_t service_id, uint16_t instance_id);
+void unsubscribe_event(uint16_t service_id, uint16_t instance_id,
+                       uint16_t event_group_id, uint16_t event_id);
+
+// Availability fan-out (optional but useful)
+using AvailabilityHandler = std::function<void(uint16_t service,
+                                               uint16_t instance,
+                                               bool available)>;
+using AvailabilityToken = std::uint64_t;
+
+AvailabilityToken register_availability_handler(AvailabilityHandler cb);
+void remove_availability_handler(AvailabilityToken tok);
+
+void shutdown();
 }

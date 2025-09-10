@@ -4,53 +4,62 @@
 #include <csignal>
 #include <thread>
 #include <string>
+
 #include "log.hpp"
 #include "sinks_console.hpp"
-#include "com/someip_binding.hpp"
+
+#include "ara/com/core.hpp"
+#include "ara/com/someip_adapter.hpp"
+#include "services_description.hpp"          
 #include <ara/phm/supervision_client.hpp>
 
-namespace demo_if {
-  constexpr std::uint16_t kServiceId   = 0x1234;
-  constexpr std::uint16_t kInstanceId  = 0x0001;
-  constexpr std::uint16_t kEventId     = 0x8001;
-  constexpr std::uint16_t kEventGroup  = 0x0001;
-}
-
+// graceful shutdown flag
 static std::atomic<bool> running{true};
-static void on_sig(int){ running=false; }
+static void on_sig(int) { running.store(false, std::memory_order_relaxed); }
 
 int main() {
+  std::signal(SIGINT,  on_sig);
   std::signal(SIGTERM, on_sig);
 
+  // Transport-agnostic runtime backed by SOME/IP adapter
+  ara::com::Runtime rt(ara::com::GetSomeipAdapter());
+
+  // Logging
   auto &LM = ara::log::LogManager::Instance();
   LM.SetGlobalIds("ECU1","sensor_provider");
   LM.SetDefaultLevel(ara::log::LogLevel::kInfo);
   LM.AddSink(std::make_shared<ara::log::ConsoleSink>());
   auto lg = ara::log::Logger::CreateLogger("SNS");
 
+  // PHM
   ara::phm::SupervisionClient phm("sensor_provider");
 
-  someip::init("sensor_provider");
-  // Offer service + event (your wrapper also subscribes provider to EG; OK)
-  someip::offer_service(demo_if::kServiceId, demo_if::kInstanceId,
-                        demo_if::kEventId, demo_if::kEventGroup);
+  // Offer the Speed service via generic Skeleton
+  ara::com::Skeleton<SpeedDesc> skel(rt, "sensor_provider");
+  skel.Offer();
 
   using namespace std::chrono_literals;
-  float t = 0.f;
-  while (running.load()) {
+  float t = 0.0f;
+
+  while (running.load(std::memory_order_relaxed)) {
     phm.ReportAlive();
 
-    float speed = 50.f + 10.f * std::sin(t);
+    float speed = 50.0f + 10.0f * std::sin(t);
     t += 0.2f;
 
-    // Your wrapper uses std::string payloads. Send ASCII float:
-    someip::send_notification(demo_if::kServiceId, demo_if::kInstanceId,
-                              demo_if::kEventId, std::to_string(speed));
+    // Publish event (transport-agnostic). Codec<float> handles serialization.
+    auto ec = skel.Notify<SpeedDesc::SpeedEvent>(speed);
+    if (ec != ara::com::Errc::kOk) {
+      ARA_LOGWARN(lg, "Notify failed with Errc={}", static_cast<int>(ec));
+    } else {
+      ARA_LOGDEBUG(lg, "Speed publish {}", speed);
+    }
 
-    ARA_LOGDEBUG(lg, "Speed publish {}", speed);
     std::this_thread::sleep_for(100ms);
   }
 
+  skel.Stop();
+  rt.adapter().shutdown();
   ARA_LOGINFO(lg, "Shutdown");
   return 0;
 }

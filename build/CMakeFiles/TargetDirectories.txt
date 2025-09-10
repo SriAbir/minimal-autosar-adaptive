@@ -1,4 +1,5 @@
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/someip_binding.dir
+/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/ara_com_adapter_someip.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/logging.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/log_demo.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/persistency.dir

@@ -17,7 +17,9 @@
 #include <phm/phm_supervisor.hpp>
 #include <arpa/inet.h>
 #include <cstring>
-
+#include <csignal>
+#include <chrono>
+#include <thread>
 
 // #include "sinks_dlt.hpp"   // enable later when we can start dlt-daemon
 
@@ -114,10 +116,19 @@ static void register_phm_handlers(PhmSupervisor& phm) {
     );
 }
 
+//Used for better shutdown behavior
+static std::atomic_bool running{true};
+static void on_sig(int){ running=false; }
+
 int main() {
 
     std::string manifest_dir = "../manifests";
     std::string config_path  = manifest_dir + "/persistency.json";
+
+    //For better shutdown
+    std::signal(SIGINT, on_sig);
+    std::signal(SIGTERM, on_sig);
+    std::vector<pid_t> children;
 
     auto r = persistency::StorageRegistry::Instance().InitFromFile(config_path);
     if (!r.HasValue()) {
@@ -158,31 +169,88 @@ int main() {
         }
     }
 
-    // Monitor running apps
-    while (!running_apps.empty()) {
-        int status;
-        pid_t pid = wait(&status);
-        if (pid > 0 && running_apps.count(pid)) {
-            auto app = running_apps[pid];
-            running_apps.erase(pid);
+    // Monitor running apps (signal-aware, non-blocking)
+    using namespace std::chrono_literals;
 
-            std::cout << "[EM] App with PID " << pid << " exited with status " << status << std::endl;
+    while (running) {
+        int status = 0;
+        pid_t pid = waitpid(-1, &status, WNOHANG);
 
-            if (app.restart_policy == "on-failure" && WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-                restart_count[app.app_id]++;
-                if (restart_count[app.app_id] <= max_restarts) {
-                    std::cout << "[EM] Restarting app: " << app.app_id
-                              << " (Attempt " << restart_count[app.app_id] << ")" << std::endl;
-                    pid_t new_pid = launch_app(app);
-                    if (new_pid > 0) {
-                        running_apps[new_pid] = app;
+        if (pid > 0) {
+            auto it = running_apps.find(pid);
+            if (it != running_apps.end()) {
+                const auto app = it->second;
+                running_apps.erase(it);
+
+                std::cout << "[EM] App with PID " << pid << " exited with status " << status << std::endl;
+
+                if (app.restart_policy == "on-failure" && WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+                    int& cnt = restart_count[app.app_id];
+                    ++cnt;
+                    if (cnt <= max_restarts) {
+                        std::cout << "[EM] Restarting app: " << app.app_id
+                                << " (Attempt " << cnt << ")" << std::endl;
+                        pid_t new_pid = launch_app(app);
+                        if (new_pid > 0) {
+                            running_apps[new_pid] = app;
+                        }
+                    } else {
+                        std::cout << "[EM] Max restart attempts reached for app: " << app.app_id << std::endl;
                     }
-                } else {
-                    std::cout << "[EM] Max restart attempts reached for app: " << app.app_id << std::endl;
                 }
             }
+            // keep looping; there might be more to reap
+            continue;
         }
+
+        if (pid == 0) {
+            // no child changed -> short sleep to avoid busy spin
+            std::this_thread::sleep_for(100ms);
+            continue;
+        }
+
+        // pid < 0
+        if (errno == ECHILD) {
+            // no children left
+            break;
+        }
+        // transient error: sleep a bit and retry
+        std::this_thread::sleep_for(100ms);
     }
+
+    // If we got here because of Ctrl-C, terminate remaining children gracefully
+    if (!running && !running_apps.empty()) {
+        std::cout << "[EM] Caught signal: shutting down children…" << std::endl;
+
+        // 1) Ask nicely
+        for (const auto& [pid, _] : running_apps)
+            kill(pid, SIGTERM);
+
+        // 2) Wait up to ~2s for them to exit
+        for (int i = 0; i < 20; ++i) {
+            int status = 0;
+            pid_t r = waitpid(-1, &status, WNOHANG);
+            if (r > 0) {
+                running_apps.erase(r);
+                if (running_apps.empty()) break;
+            } else if (r == 0) {
+                std::this_thread::sleep_for(100ms);
+            } else if (errno == ECHILD) {
+                running_apps.clear();
+                break;
+            }
+        }
+
+        // 3) Nuke any holdouts
+        for (const auto& [pid, _] : running_apps)
+            kill(pid, SIGKILL);
+
+        // Reap anything that just died
+        while (waitpid(-1, nullptr, WNOHANG) > 0) {}
+    }
+
+    // Stop vsomeip cleanly (requires the shutdown() you added in the binding)
+    someip::shutdown();
 
     std::cout << "[EM] All apps have exited. Shutting down Execution Manager." << std::endl;
     return 0;

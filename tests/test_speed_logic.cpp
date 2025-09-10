@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <filesystem>
-#include "apps/speed_logic.hpp"
+#include "speed_logic.hpp"
 #include "persistency/key_value_storage_backend.hpp"
 #include "ara/per/key_value_storage.hpp"
 

@@ -1,10 +1,12 @@
 #include "someip_binding.hpp"
 #include <iostream>
 #include <vector>
+#include <unordered_set>
+#include <tuple>
 #include <mutex>
 #include <thread>
-#include <atomic>   // <- add
-#include <set>      // (you already use std::set)
+#include <atomic>   
+#include <set>     
 
 namespace someip {
 
@@ -21,6 +23,23 @@ static std::string      g_app_name;
 // NEW: make “auto-subscribe on availability” optional (default OFF)
 static std::atomic_bool g_auto_subscribe{false};
 static std::atomic<uint16_t> g_default_event_group{0x0001};
+
+//Additions to help hide someip behind ara::com
+static std::mutex avail_mu;
+static std::atomic_uint64_t avail_next{0};
+static std::unordered_map<std::uint64_t, AvailabilityHandler> avail_cbs;
+
+//Fixing connection issues with registry
+static std::mutex g_offer_mu;
+static std::unordered_set<std::uint64_t> g_offered_events;
+static inline std::uint64_t make_key(uint16_t s, uint16_t i, uint16_t e) {
+   return (static_cast<std::uint64_t>(s) << 32)
+         | (static_cast<std::uint64_t>(i) << 16)
+         | static_cast<std::uint64_t>(e);
+  }
+
+//Better shutdown behavior
+static std::thread g_vsomeip_thread;
 
 void enable_auto_subscribe(bool enable, uint16_t event_group_id) {
     g_auto_subscribe.store(enable, std::memory_order_relaxed);
@@ -79,54 +98,62 @@ void init(const std::string& app_name) {
     );
 
     app->register_availability_handler(
-        vsomeip::ANY_SERVICE,
-        vsomeip::ANY_INSTANCE,
-        [](vsomeip::service_t service,
-           vsomeip::instance_t instance,
-           bool is_available) {
-            if (is_available) {
-                std::cout << "[shim] Service " << std::hex << service << ":" << instance
-                          << " is available" << std::dec << std::endl;
+    vsomeip::ANY_SERVICE,
+    vsomeip::ANY_INSTANCE,
+    [](vsomeip::service_t service,
+       vsomeip::instance_t instance,
+       bool is_available) {
 
-                // CHANGED: only auto-subscribe if explicitly enabled.
-                if (g_auto_subscribe.load(std::memory_order_relaxed)) {
-                    auto eg = g_default_event_group.load(std::memory_order_relaxed);
-                    try {
-                        app->subscribe(service, instance, eg);
-                    } catch (...) {
-                        // swallow errors; availability callbacks can race during startup
-                    }
-                }
-            }
+        if (is_available && g_auto_subscribe.load(std::memory_order_relaxed)) {
+            auto eg = g_default_event_group.load(std::memory_order_relaxed);
+            try { app->subscribe(service, instance, eg); } catch (...) {}
         }
-    );
+
+        // NEW: notify external listeners
+        std::vector<AvailabilityHandler> cbs;
+        {
+            std::lock_guard<std::mutex> lk(avail_mu);
+            for (auto &kv : avail_cbs) cbs.push_back(kv.second);
+        }
+        for (auto &cb : cbs) if (cb) cb(service, instance, is_available);
+    }
+);
+
 
     // Start vsomeip only once per process
     if (!g_started.exchange(true)) {
-        std::thread vsomeip_thread([] {
-            app->start();
-        });
-        vsomeip_thread.detach();
+    g_vsomeip_thread = std::thread([] { app->start(); });
     }
 }
+
+void shutdown() {
+    if (!app) return;
+    try { app->stop(); } catch (...) {}
+    if (g_vsomeip_thread.joinable())
+        g_vsomeip_thread.join();
+    g_started = false;
+}
+
 void offer_service(uint16_t service_id, uint16_t instance_id, uint16_t event_id, uint16_t event_group_id) {
     app->offer_service(service_id, instance_id);
 
-    std::set<vsomeip::eventgroup_t> event_groups;
-    event_groups.insert(event_group_id);
+    //std::set<vsomeip::eventgroup_t> event_groups;
+    //event_groups.insert(event_group_id);
 
-    app->offer_event(
-        service_id,
-        instance_id,
-        event_id,
-        event_groups,
-        vsomeip::event_type_e::ET_FIELD,
-        std::chrono::milliseconds::zero(),
-        false, // not change resilient
-        true   // reliable
-    );
-
-    app->subscribe(service_id, instance_id, event_group_id);
+    if(event_id != 0){
+        std::set<vsomeip::eventgroup_t> event_groups{event_group_id};
+        app->offer_event(
+            service_id,
+            instance_id,
+            event_id,
+            event_groups,
+            vsomeip::event_type_e::ET_FIELD,
+            std::chrono::milliseconds::zero(),
+            false, // not change resilient
+            true   // reliable
+        );
+    }
+    //app->subscribe(service_id, instance_id, event_group_id);
 
     std::cout << "[someip] Offered service " << std::hex << service_id
               << ":" << instance_id << ", event 0x" << event_id
@@ -151,15 +178,34 @@ void subscribe_to_event(uint16_t service_id, uint16_t instance_id, uint16_t even
               << " and subscribed to group 0x" << event_group_id << std::endl;
 }
 
-
-
-
 void request_service(uint16_t service_id, uint16_t instance_id) {
     app->request_service(service_id, instance_id);
     std::cout << "[someip] Requesting service " << std::hex << service_id << ":" << instance_id << std::endl;
 }
 
 void send_notification(uint16_t service_id, uint16_t instance_id, uint16_t event_id, const std::string& payload) {
+    
+    // Ensure the event is offered at least once (lazy registration).
+    {
+        std::lock_guard<std::mutex> lk(g_offer_mu);
+        auto key = make_key(service_id, instance_id, event_id);
+        if (!g_offered_events.count(key)) {
+            std::set<vsomeip::eventgroup_t> egs{
+                g_default_event_group.load(std::memory_order_relaxed)  // defaults to 0x0001
+            };
+            app->offer_event(
+                service_id,
+                instance_id,
+                event_id,
+                egs,
+                vsomeip::event_type_e::ET_FIELD,
+                std::chrono::milliseconds::zero(),
+                false, // not change resilient
+                true   // reliable
+            );
+            g_offered_events.insert(key);
+        }
+    }
     auto payload_ptr = vsomeip::runtime::get()->create_payload();
     std::vector<vsomeip::byte_t> data(payload.begin(), payload.end());
     payload_ptr->set_data(data);
@@ -208,5 +254,34 @@ void send_response(std::shared_ptr<vsomeip::message> request,
 
     app->send(resp);
 }
+
+//Additions to help hide someip behind ara::com
+void release_service(uint16_t s, uint16_t i) {
+    if (app) app->release_service(s, i);
+}
+void stop_offer_service(uint16_t s, uint16_t i) {
+    if (app) app->stop_offer_service(s, i);
+}
+void unsubscribe_event(uint16_t s, uint16_t i, uint16_t g, uint16_t e) {
+    if (!app) return;
+    try {
+        app->release_event(s, i, e);
+    } catch (...) {}
+    try {
+        app->unsubscribe(s, i, g);
+    } catch (...) {}
+}
+
+AvailabilityToken register_availability_handler(AvailabilityHandler cb) {
+    const auto id = ++avail_next;
+    std::lock_guard<std::mutex> lk(avail_mu);
+    avail_cbs[id] = std::move(cb);
+    return id;
+}
+void remove_availability_handler(AvailabilityToken tok) {
+    std::lock_guard<std::mutex> lk(avail_mu);
+    avail_cbs.erase(tok);
+}
+
 
 } // namespace someip
