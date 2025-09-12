@@ -68,11 +68,10 @@ Add local.json under `vsomeip`. Example:
   "routing": "sensor_provider",
   "service-discovery": { "enable": true }
 }
+```
 If you haven't placed your local.json under `vsomeip/` in your project you will need to run the following command when in `your_project/build/` before starting the Execution Manager:
 ```bash
 export VSOMEIP_CONFIGURATION=/absolute/path/to/vsomeip/local.json
-```
-
 ```
 ## Build & Run
 ```bash
