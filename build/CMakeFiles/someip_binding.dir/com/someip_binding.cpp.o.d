@@ -215,4 +215,5 @@ CMakeFiles/someip_binding.dir/com/someip_binding.cpp.o: \
  /usr/include/c++/11/bits/std_mutex.h \
  /usr/include/c++/11/bits/unique_lock.h /usr/include/c++/11/thread \
  /usr/include/c++/11/bits/std_thread.h \
- /usr/include/c++/11/bits/this_thread_sleep.h /usr/include/c++/11/atomic
+ /usr/include/c++/11/bits/this_thread_sleep.h /usr/include/c++/11/atomic \
+ /usr/include/c++/11/sstream /usr/include/c++/11/bits/sstream.tcc

@@ -17,6 +17,9 @@
 //Builds the googlemock subproject
 BUILD_GMOCK:BOOL=ON
 
+//Build raw SOME/IP and logging demos
+BUILD_INTERNAL_DEMOS:BOOL=OFF
+
 //Build the logging demo app
 BUILD_LOG_DEMO:BOOL=ON
 

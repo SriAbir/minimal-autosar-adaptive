@@ -6,14 +6,21 @@
 #include <mutex>
 #include <thread>
 #include <atomic>   
-#include <set>     
+#include <set>
+#include <unordered_map>
+#include <sstream>
+#include <cstdlib>
+
 
 namespace someip {
 
 std::shared_ptr<vsomeip::application> app;
 std::mutex handler_mutex;
 std::function<void(const std::string&)> global_handler;
-static RpcHandler rpc_handler; // for health manager
+// Changes to handle multiple handlers
+static std::mutex notif_mu;
+static std::vector<NotifHandler> notif_handlers;
+static std::vector<RpcHandler>   rpc_handlers;
 
 // NEW: guard against double init / double start (safe, process-local)
 static std::mutex       g_init_mu;
@@ -40,6 +47,9 @@ static inline std::uint64_t make_key(uint16_t s, uint16_t i, uint16_t e) {
 
 //Better shutdown behavior
 static std::thread g_vsomeip_thread;
+
+
+
 
 void enable_auto_subscribe(bool enable, uint16_t event_group_id) {
     g_auto_subscribe.store(enable, std::memory_order_relaxed);
@@ -71,28 +81,31 @@ void init(const std::string& app_name) {
         vsomeip::ANY_INSTANCE,
         vsomeip::ANY_METHOD,
         [](std::shared_ptr<vsomeip::message> msg) {
-            auto pl = msg->get_payload();
+            // Extract payload once
             std::string payload;
-            if (pl && pl->get_length())
-                payload.assign(reinterpret_cast<const char*>(pl->get_data()), pl->get_length());
-
-            // Structured path: PHM server (EM) can switch on S/I/M
-            {
-                std::lock_guard<std::mutex> lock(handler_mutex);
-                if (rpc_handler) {
-                    rpc_handler(msg->get_service(),
-                                msg->get_instance(),
-                                msg->get_method(),
-                                payload,
-                                msg);
-                    return;
-                }
+            if (auto pl = msg->get_payload()) {
+                auto len = pl->get_length();
+                if (len) payload.assign(reinterpret_cast<const char*>(pl->get_data()), len);
             }
 
-            // Fallback (to the old global handler, still supported)
-            {
-                std::lock_guard<std::mutex> lock(handler_mutex);
-                if (global_handler) global_handler(payload);
+            const bool is_notif = (msg->get_message_type() == vsomeip::message_type_e::MT_NOTIFICATION);
+
+            if (is_notif) {
+                // fan-out to all notification handlers (ara::com adapter lives here)
+                std::vector<NotifHandler> cbs;
+                { std::lock_guard<std::mutex> lk(notif_mu); cbs = notif_handlers; }
+                for (auto &cb : cbs) if (cb)
+                    cb(msg->get_service(), msg->get_instance(), msg->get_method(), payload, msg);
+
+                // (optional) legacy fallback
+                std::lock_guard<std::mutex> lk(handler_mutex);
+                if (cbs.empty() && global_handler) global_handler(payload);
+            } else {
+                // requests/responses go to RPC handlers (e.g., EM’s PHM server)
+                std::vector<RpcHandler> cbs;
+                { std::lock_guard<std::mutex> lk(handler_mutex); cbs = rpc_handlers; }
+                for (auto &cb : cbs) if (cb)
+                    cb(msg->get_service(), msg->get_instance(), msg->get_method(), payload, msg);
             }
         }
     );
@@ -118,11 +131,58 @@ void init(const std::string& app_name) {
         for (auto &cb : cbs) if (cb) cb(service, instance, is_available);
     }
 );
+    // Auto-request events from env (format: "svc:inst:event[@group],svc:inst:event...")
+    if (const char* env = std::getenv("SOMEIP_REQUEST_EVENTS")) {
+        std::string spec(env);
+        std::istringstream iss(spec);
+        std::string tok;
+
+        auto parse_u32 = [](const std::string& s) -> uint32_t {
+            try { return static_cast<uint32_t>(std::stoul(s, nullptr, 0)); }
+            catch (...) { return 0; }
+        };
+
+        while (std::getline(iss, tok, ',')) {
+            if (tok.empty()) continue;
+
+            // optional "@group"
+            std::string left = tok, grp;
+            if (auto at = tok.find('@'); at != std::string::npos) {
+                left = tok.substr(0, at);
+                grp  = tok.substr(at + 1);
+            }
+
+            // split "svc:inst:event"
+            std::istringstream lss(left);
+            std::string s, i, e;
+            if (std::getline(lss, s, ':') && std::getline(lss, i, ':') && std::getline(lss, e, ':')) {
+                uint16_t svc = static_cast<uint16_t>(parse_u32(s));
+                uint16_t inst= static_cast<uint16_t>(parse_u32(i));
+                uint16_t evt = static_cast<uint16_t>(parse_u32(e));
+                uint16_t eg  = grp.empty()
+                    ? g_default_event_group.load(std::memory_order_relaxed)
+                    : static_cast<uint16_t>(parse_u32(grp));
+
+                try {
+                    std::set<vsomeip::eventgroup_t> groups{eg};
+                    app->request_event(svc, inst, evt, groups,
+                                    vsomeip::event_type_e::ET_FIELD,
+                                    vsomeip::reliability_type_e::RT_RELIABLE);
+                    app->subscribe(svc, inst, eg);
+                    std::cout << "[someip] auto-requested 0x" << std::hex << evt
+                            << " on " << svc << ":" << inst
+                            << " (group 0x" << eg << ")\n";
+                } catch (...) {
+                    std::cerr << "[someip] auto-request failed for token: " << tok << "\n";
+                }
+            }
+        }
+}
 
 
     // Start vsomeip only once per process
     if (!g_started.exchange(true)) {
-    g_vsomeip_thread = std::thread([] { app->start(); });
+        g_vsomeip_thread = std::thread([] { app->start(); });
     }
 }
 
@@ -224,7 +284,13 @@ void register_handler(std::function<void(const std::string&)> handler) {
 // Implement the RPC handler to handle health manager requests
 void register_rpc_handler(RpcHandler handler) {
     std::lock_guard<std::mutex> lock(handler_mutex);
-    rpc_handler = std::move(handler);
+    rpc_handlers.push_back(std::move(handler));
+}
+
+//Implementing a new notification handle to allow multiple handlers
+void register_notification_handler(NotifHandler handler) {
+    std::lock_guard<std::mutex> lock(notif_mu);
+    notif_handlers.push_back(std::move(handler));
 }
 
 void send_request(uint16_t service_id, uint16_t instance_id, uint16_t method_id,

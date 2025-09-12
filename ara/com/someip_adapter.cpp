@@ -45,8 +45,8 @@ public:
       subs_[Key{s,i,e}][token.value] = std::move(cb);
       token_meta_[token.value] = SubMeta{s,i,g,e};
     }
-    someip::subscribe_to_event(s, i, g, e);
     ensure_dispatcher_installed();
+    someip::subscribe_to_event(s, i, g, e);
     return token;
   }
 
@@ -114,22 +114,20 @@ private:
   struct SubMeta { ServiceId s; InstanceId i; EventGroupId g; EventId e; };
 
   void ensure_dispatcher_installed() {
-    std::call_once(dispatch_once_, [&]{
-      someip::register_rpc_handler(
-        [this](uint16_t sid, uint16_t iid, uint16_t mid,
-               const std::string& payload,
-               std::shared_ptr<vsomeip::message> req) {
-          if (!req) return;
-          if (req->get_message_type() != vsomeip::message_type_e::MT_NOTIFICATION) return;
+  std::call_once(dispatch_once_, [&]{
+    someip::register_notification_handler(
+      [this](uint16_t sid, uint16_t iid, uint16_t evid,
+             const std::string& payload,
+             std::shared_ptr<vsomeip::message> /*unused*/) {
+        std::lock_guard lk(mu_);
+        auto it = subs_.find(Key{sid, iid, evid});
+        if (it == subs_.end()) return;
+        for (auto& [_, cb] : it->second) if (cb) cb(payload);
+      }
+    );
+  });
+}
 
-          std::lock_guard lk(mu_);
-          auto it = subs_.find(Key{sid, iid, mid});
-          if (it == subs_.end()) return;
-          for (auto& [_, cb] : it->second) if (cb) cb(payload);
-        }
-      );
-    });
-  }
 
   std::once_flag once_, dispatch_once_;
   std::mutex mu_;

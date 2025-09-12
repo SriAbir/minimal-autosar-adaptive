@@ -13,10 +13,8 @@
 #include "services_description.hpp"          
 #include <ara/phm/supervision_client.hpp>
 #include "persistency/key_value_storage_backend.hpp" 
-
 #include "ara/per/key_value_storage.hpp"
 
-#include <ara/phm/supervision_client.hpp>
 
 static std::atomic<bool> running{true};
 static void on_sig(int){ running=false; }
@@ -43,6 +41,7 @@ int main() {
 
   // PHM
   ara::phm::SupervisionClient phm("speed_client");
+  phm.Connect();
 
   // ---- ara::com-style client ----
   ara::com::Proxy<SpeedDesc> proxy(rt, "speed_client");

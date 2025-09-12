@@ -64,7 +64,7 @@ option(BUILD_LOG_DEMO "Build the logging demo app" ON)
 
 add_library(logging STATIC
   logging/src/sinks_console.cpp
-  logging/src/log.cpp
+  #logging/src/log.cpp //removed, no need for this except if a logging demo is needed
   logging/src/sinks_dlt.cpp
 )
 target_include_directories(logging PUBLIC
@@ -106,7 +106,7 @@ target_include_directories(persistency PUBLIC
 # ---------- ara_phm client (apps call ReportAlive/Checkpoint) ---------------
 add_library(ara_phm STATIC
   phm/src/supervision_client.cpp
-  phm/src/phm_supervisor.cpp
+  # phm/src/phm_supervisor.cpp //Removed to not duplicate with phm_core
 )
 target_include_directories(ara_phm PUBLIC
   ${CMAKE_SOURCE_DIR}/include
@@ -115,6 +115,7 @@ target_include_directories(ara_phm PUBLIC
 target_link_libraries(ara_phm
   PUBLIC
     someip_binding
+    phm_core
     PkgConfig::VSOMEIP
     Threads::Threads
 )
@@ -153,7 +154,7 @@ set(APP_PUBLIC_INCLUDES
   ${CMAKE_SOURCE_DIR}/logging/include  # log.hpp
   ${CMAKE_SOURCE_DIR}/persistency/include
   ${CMAKE_SOURCE_DIR}/phm/include
-  ${CMAKE_SOURCE_DIR}/com
+  # ${CMAKE_SOURCE_DIR}/com //Removed to not expose binding details to apps
   ${CMAKE_SOURCE_DIR}/services
 )
 
@@ -169,12 +170,18 @@ target_link_libraries(execution_manager
 )
 
 # ---------- Example SOME/IP apps (keep your current samples) ----------------
-add_executable(someip_provider apps/someip_provider.cpp)
-target_link_libraries(someip_provider PRIVATE 
-  someip_binding 
-  PkgConfig::VSOMEIP 
-  Threads::Threads
-)
+# These are independent of the rest of the project, just using the binding
+# Removed: Re-enable with build command to show the use of ara::com with SOME/IP directly
+# (not recommended for real use, prefer the adapter instead)
+option(BUILD_INTERNAL_DEMOS "Build raw SOME/IP and logging demos" OFF)
+if (BUILD_INTERNAL_DEMOS)
+  add_executable(someip_provider apps/someip_provider.cpp)
+  target_link_libraries(someip_provider PRIVATE 
+    someip_binding
+    PkgConfig::VSOMEIP
+    Threads::Threads
+  )
+endif()
 
 # ----------- Apps for demos / etc. ------------------------------------------
 

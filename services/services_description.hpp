@@ -7,7 +7,7 @@ struct SpeedDesc {
   static constexpr ara::com::ServiceId  kServiceId       = 0x1234;
   static constexpr ara::com::InstanceId kInstanceId      = 0x0001;
   static constexpr const char*          kDefaultClient   = "speed_client";
-  static constexpr const char*          kDefaultServer   = "speed_provider";
+  static constexpr const char*          kDefaultServer   = "sensor_provider";
 
   struct SpeedEvent {
     using Payload                 = float;

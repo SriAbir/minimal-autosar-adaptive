@@ -61,8 +61,10 @@ ara::core::Result<void>
 KeyValueStorageBackend::SetValue(const std::string& key, const std::string& value) noexcept {
     std::lock_guard<std::mutex> lock(mtx_);
 
-    // (optional) key safety check like in GetValue
-    // if (!key_is_safe(key)) return ara::core::ErrorCode(ara::core::PersistencyErrc::kPermissionDenied);
+    // Key safety check like in GetValue
+    if (!key_is_safe(key)) {
+        return ara::core::ErrorCode(ara::core::PersistencyErrc::kPermissionDenied);
+    }
 
     fs::create_directories(base_path_);
 

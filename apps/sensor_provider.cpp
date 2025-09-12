@@ -33,6 +33,7 @@ int main() {
 
   // PHM
   ara::phm::SupervisionClient phm("sensor_provider");
+  phm.Connect();
 
   // Offer the Speed service via generic Skeleton
   ara::com::Skeleton<SpeedDesc> skel(rt, "sensor_provider");

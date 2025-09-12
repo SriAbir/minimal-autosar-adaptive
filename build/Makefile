@@ -276,19 +276,6 @@ execution_manager/fast:
 .PHONY : execution_manager/fast
 
 #=============================================================================
-# Target rules for targets named someip_provider
-
-# Build rule for target.
-someip_provider: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 someip_provider
-.PHONY : someip_provider
-
-# fast build rule for target.
-someip_provider/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/someip_provider.dir/build.make CMakeFiles/someip_provider.dir/build
-.PHONY : someip_provider/fast
-
-#=============================================================================
 # Target rules for targets named sensor_provider
 
 # Build rule for target.
@@ -793,30 +780,6 @@ apps/sensor_provider.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sensor_provider.dir/build.make CMakeFiles/sensor_provider.dir/apps/sensor_provider.cpp.s
 .PHONY : apps/sensor_provider.cpp.s
 
-apps/someip_provider.o: apps/someip_provider.cpp.o
-.PHONY : apps/someip_provider.o
-
-# target to build an object file
-apps/someip_provider.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/someip_provider.dir/build.make CMakeFiles/someip_provider.dir/apps/someip_provider.cpp.o
-.PHONY : apps/someip_provider.cpp.o
-
-apps/someip_provider.i: apps/someip_provider.cpp.i
-.PHONY : apps/someip_provider.i
-
-# target to preprocess a source file
-apps/someip_provider.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/someip_provider.dir/build.make CMakeFiles/someip_provider.dir/apps/someip_provider.cpp.i
-.PHONY : apps/someip_provider.cpp.i
-
-apps/someip_provider.s: apps/someip_provider.cpp.s
-.PHONY : apps/someip_provider.s
-
-# target to generate assembly for a file
-apps/someip_provider.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/someip_provider.dir/build.make CMakeFiles/someip_provider.dir/apps/someip_provider.cpp.s
-.PHONY : apps/someip_provider.cpp.s
-
 apps/speed_client.o: apps/speed_client.cpp.o
 .PHONY : apps/speed_client.o
 
@@ -912,30 +875,6 @@ em/execution_manager.s: em/execution_manager.cpp.s
 em/execution_manager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/execution_manager.dir/build.make CMakeFiles/execution_manager.dir/em/execution_manager.cpp.s
 .PHONY : em/execution_manager.cpp.s
-
-logging/src/log.o: logging/src/log.cpp.o
-.PHONY : logging/src/log.o
-
-# target to build an object file
-logging/src/log.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/logging.dir/build.make CMakeFiles/logging.dir/logging/src/log.cpp.o
-.PHONY : logging/src/log.cpp.o
-
-logging/src/log.i: logging/src/log.cpp.i
-.PHONY : logging/src/log.i
-
-# target to preprocess a source file
-logging/src/log.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/logging.dir/build.make CMakeFiles/logging.dir/logging/src/log.cpp.i
-.PHONY : logging/src/log.cpp.i
-
-logging/src/log.s: logging/src/log.cpp.s
-.PHONY : logging/src/log.s
-
-# target to generate assembly for a file
-logging/src/log.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/logging.dir/build.make CMakeFiles/logging.dir/logging/src/log.cpp.s
-.PHONY : logging/src/log.cpp.s
 
 logging/src/log_demo.o: logging/src/log_demo.cpp.o
 .PHONY : logging/src/log_demo.o
@@ -1110,7 +1049,6 @@ phm/src/phm_supervisor.o: phm/src/phm_supervisor.cpp.o
 
 # target to build an object file
 phm/src/phm_supervisor.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_phm.dir/build.make CMakeFiles/ara_phm.dir/phm/src/phm_supervisor.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_core.dir/build.make CMakeFiles/phm_core.dir/phm/src/phm_supervisor.cpp.o
 .PHONY : phm/src/phm_supervisor.cpp.o
 
@@ -1119,7 +1057,6 @@ phm/src/phm_supervisor.i: phm/src/phm_supervisor.cpp.i
 
 # target to preprocess a source file
 phm/src/phm_supervisor.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_phm.dir/build.make CMakeFiles/ara_phm.dir/phm/src/phm_supervisor.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_core.dir/build.make CMakeFiles/phm_core.dir/phm/src/phm_supervisor.cpp.i
 .PHONY : phm/src/phm_supervisor.cpp.i
 
@@ -1128,7 +1065,6 @@ phm/src/phm_supervisor.s: phm/src/phm_supervisor.cpp.s
 
 # target to generate assembly for a file
 phm/src/phm_supervisor.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_phm.dir/build.make CMakeFiles/ara_phm.dir/phm/src/phm_supervisor.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/phm_core.dir/build.make CMakeFiles/phm_core.dir/phm/src/phm_supervisor.cpp.s
 .PHONY : phm/src/phm_supervisor.cpp.s
 
@@ -1285,14 +1221,10 @@ help:
 	@echo "... phm_supervisor_tests"
 	@echo "... sensor_provider"
 	@echo "... someip_binding"
-	@echo "... someip_provider"
 	@echo "... speed_client"
 	@echo "... apps/sensor_provider.o"
 	@echo "... apps/sensor_provider.i"
 	@echo "... apps/sensor_provider.s"
-	@echo "... apps/someip_provider.o"
-	@echo "... apps/someip_provider.i"
-	@echo "... apps/someip_provider.s"
 	@echo "... apps/speed_client.o"
 	@echo "... apps/speed_client.i"
 	@echo "... apps/speed_client.s"
@@ -1305,9 +1237,6 @@ help:
 	@echo "... em/execution_manager.o"
 	@echo "... em/execution_manager.i"
 	@echo "... em/execution_manager.s"
-	@echo "... logging/src/log.o"
-	@echo "... logging/src/log.i"
-	@echo "... logging/src/log.s"
 	@echo "... logging/src/log_demo.o"
 	@echo "... logging/src/log_demo.i"
 	@echo "... logging/src/log_demo.s"
