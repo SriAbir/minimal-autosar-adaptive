@@ -303,6 +303,96 @@ int main() {
   return 0;
 }
 ```
+#### D. Diagnostics
+If your app needs to expose diagnostics (via a simple UDS-over-TCP shim), follow these steps:
+1. Add adapter code to your app `<your_app>.cpp`:
+```cpp
+//Add include among the others
+
+#include "ara/diag/diag_server.hpp"
+#include <thread>
+#include <cstdlib>
+
+// Your neutral hooks (or real logic)
+bool        function_hasTrigger()   { return false; }
+const char* function_triggerCause() { return "None"; }
+void        function_resetTrigger() { /* no-op */ }
+
+static void run_diag_thread() {
+  ara::diag::DiagServer srv;
+
+  // Register RDBI (0x22) and RoutineControl (0x31) handlers.
+  // Map to your *private* DID/RID at runtime (placeholder below).
+  const uint16_t DID_HasTrigger   = 0x1234;  // example only
+  const uint16_t DID_TriggerCause = 0x1235;  // example only
+  const uint16_t RID_ResetTrigger = 0x1000;  // example only
+
+  srv.RegisterRdbi({
+    .onRead = [&](uint16_t did){
+      using ara::diag::Nrc;
+      if (did == DID_HasTrigger) {
+        uint8_t v = function_hasTrigger() ? 1 : 0;
+        return std::pair{Nrc::kOk, std::vector<uint8_t>{v}};
+      }
+      if (did == DID_TriggerCause) {
+        std::string s = function_triggerCause();
+        return std::pair{Nrc::kOk, std::vector<uint8_t>(s.begin(), s.end())};
+      }
+      return std::pair{Nrc::kOutOfRange, std::vector<uint8_t>{}};
+    }
+  });
+
+  srv.RegisterRoutine({
+    .onRoutine = [&](uint8_t sub, uint16_t rid, const std::vector<uint8_t>&){
+      using ara::diag::Nrc;
+      if (sub == 0x01 && rid == RID_ResetTrigger) { function_resetTrigger(); return Nrc::kOk; }
+      return Nrc::kSubFuncNotSupported;
+    }
+  });
+
+  const char* bind = std::getenv("DIAG_BIND") ? std::getenv("DIAG_BIND") : "127.0.0.1";
+  uint16_t port = std::getenv("DIAG_PORT") ? static_cast<uint16_t>(std::stoi(std::getenv("DIAG_PORT"))) : 0;
+
+  // Starts the tiny UDS-over-TCP loop internally (DoIP-like)
+  srv.Run(bind, port);   // blocks; call in its own thread
+}
+
+int main() {
+  std::thread diag_thr(run_diag_thread);
+
+  // ... your normal app code ...
+
+  diag_thr.join();
+}
+```
+Replace the hook implementations with real logic when you want diagnostics to reflect your app’s state.
+
+2. Handle multiple apps
+If you run multiple apps with diagnostics enabled, give each a unique port.
+You can set this at runtime:
+```bash
+export DIAG_PORT=13401
+./apps/my_app
+```
+By default, the server binds to 127.0.0.1:13400. Using 127.0.0.1 is safe: it only accepts local connections.
+3. Config and safety
+- Public repo: commit only diagnostics/config/diag-example.json with placeholder IDs.
+- Private repo: keep your real DID/RID mappings in diagnostics/config/diag.json (add to .gitignore).
+- Example environment setup:
+```bash
+export DIAG_CONFIG_PATH=diagnostics/config/diag-example.json
+```
+4. Testing with an UDS client
+Send a ReadDataByIdentifier request (0x22) [Python]:
+```python
+import socket, struct
+s = socket.socket(); s.connect(("127.0.0.1",13400))
+req = bytes([0x22,0x12,0x34])           # DID 0x1234 (example)
+s.sendall(struct.pack(">H",len(req))+req)
+rlen = struct.unpack(">H",s.recv(2))[0]
+print("UDS rsp:", list(s.recv(rlen)))
+```
+
 ### 3. Add a manifest file <your_app_name>.json in `manifests/`. Some templates are provided below.
 Executable path: use an absolute path or install step so EM’s `execl()` finds it reliably.
 
@@ -444,3 +534,75 @@ Update the local.json with your app.
 
 ```
 Make sure all the apps you are running are there.
+
+## Generic SocketCAN Gateway.
+Include the following in your app.
+
+```cpp
+#include "can_gateway/include/function_bus_api.hpp"
+
+// Keep this handle somewhere global/singleton-ish
+static fn::GatewayHandle g_can;
+
+void wire_can_gateway() {
+  fn::BusToFunction b2f {
+    /*setLineA*/ [](bool v){ function_setLineA(v); },  // your neutral setters
+    /*setLineB*/ [](bool v){ function_setLineB(v); }
+  };
+  g_can = make_can_gateway(std::getenv("CAN_CONFIG_PATH"), b2f);
+}
+
+// Later, when your app wants to signal something to the bus. Examples:
+void function_emitIndicator(fn::LightPattern p) { if (g_can.emitLight) g_can.emitLight(p); }
+void function_emitActuator(fn::ActuatorCommand c)  { if (g_can.emitActuator)  g_can.emitActuator(c); }
+```
+
+### 1) Bring up a virtual CAN (Linux)
+sudo modprobe vcan
+sudo ip link add dev vcan0 type vcan
+sudo ip link set up vcan0
+
+### 2) Build & run
+mkdir -p build && cd build
+cmake .. && make -j
+./can_gateway  # uses config/can-example.json by default
+
+### 3) See TX frames
+# In another terminal
+candump vcan0
+
+### 4) Inject RX frames (to simulate sensors -> app)
+# Toggle LineA (bit 0) on CAN ID 0x300 (768)
+cansend vcan0 300#01
+cansend vcan0 300#00
+
+## Useful stubs
+Under `stubs/` you find some stubs that simulate different external sources such as user interface, simulating positioning input as if from GPS, and a cloud service example. These can be modified to implement real use cases.
+
+Usage:
+1) Build stubs:
+```bash
+cmake -S . -B build && cmake --build build -j
+```
+2) Run cloud receiver
+```bash
+./build/cloud_stub
+```
+3) Start position feed (optional overrides shown)
+```bash
+POS_LAT=59.33 POS_LON=18.07 POS_PERIOD_MS=1000 ./build/position_stub
+```
+4) Press the UI button (one-shot)
+```bash
+./build/ui_stub BUTTON
+```
+or interactive: 
+```bash
+./build/ui_stub   
+```
+(then type BUTTON / RESET)
+
+5) Your app:
+- listens to UI on UDP 127.0.0.1:15000 (env UI_PORT)
+- listens to Position on UDP 127.0.0.1:17000 (env POS_RX_PORT)
+- sends Cloud events to UDP 127.0.0.1:19000 (env CLOUD_HOST/CLOUD_PORT)

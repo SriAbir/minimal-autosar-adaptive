@@ -17,3 +17,4 @@ Makefile
 *.out
 *.dlt
 build/
+/diagnostics/uds/

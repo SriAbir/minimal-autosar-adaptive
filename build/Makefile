@@ -302,6 +302,84 @@ speed_client/fast:
 .PHONY : speed_client/fast
 
 #=============================================================================
+# Target rules for targets named function_diag_provider
+
+# Build rule for target.
+function_diag_provider: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 function_diag_provider
+.PHONY : function_diag_provider
+
+# fast build rule for target.
+function_diag_provider/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/function_diag_provider.dir/build.make CMakeFiles/function_diag_provider.dir/build
+.PHONY : function_diag_provider/fast
+
+#=============================================================================
+# Target rules for targets named ara_diag
+
+# Build rule for target.
+ara_diag: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ara_diag
+.PHONY : ara_diag
+
+# fast build rule for target.
+ara_diag/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_diag.dir/build.make CMakeFiles/ara_diag.dir/build
+.PHONY : ara_diag/fast
+
+#=============================================================================
+# Target rules for targets named can_gateway
+
+# Build rule for target.
+can_gateway: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 can_gateway
+.PHONY : can_gateway
+
+# fast build rule for target.
+can_gateway/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/can_gateway.dir/build.make CMakeFiles/can_gateway.dir/build
+.PHONY : can_gateway/fast
+
+#=============================================================================
+# Target rules for targets named ui_stub
+
+# Build rule for target.
+ui_stub: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ui_stub
+.PHONY : ui_stub
+
+# fast build rule for target.
+ui_stub/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ui_stub.dir/build.make CMakeFiles/ui_stub.dir/build
+.PHONY : ui_stub/fast
+
+#=============================================================================
+# Target rules for targets named position_stub
+
+# Build rule for target.
+position_stub: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 position_stub
+.PHONY : position_stub
+
+# fast build rule for target.
+position_stub/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/position_stub.dir/build.make CMakeFiles/position_stub.dir/build
+.PHONY : position_stub/fast
+
+#=============================================================================
+# Target rules for targets named cloud_stub
+
+# Build rule for target.
+cloud_stub: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cloud_stub
+.PHONY : cloud_stub
+
+# fast build rule for target.
+cloud_stub/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_stub.dir/build.make CMakeFiles/cloud_stub.dir/build
+.PHONY : cloud_stub/fast
+
+#=============================================================================
 # Target rules for targets named Experimental
 
 # Build rule for target.
@@ -828,6 +906,78 @@ ara/com/someip_adapter.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_com_adapter_someip.dir/build.make CMakeFiles/ara_com_adapter_someip.dir/ara/com/someip_adapter.cpp.s
 .PHONY : ara/com/someip_adapter.cpp.s
 
+ara/diag/diag_server.o: ara/diag/diag_server.cpp.o
+.PHONY : ara/diag/diag_server.o
+
+# target to build an object file
+ara/diag/diag_server.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_diag.dir/build.make CMakeFiles/ara_diag.dir/ara/diag/diag_server.cpp.o
+.PHONY : ara/diag/diag_server.cpp.o
+
+ara/diag/diag_server.i: ara/diag/diag_server.cpp.i
+.PHONY : ara/diag/diag_server.i
+
+# target to preprocess a source file
+ara/diag/diag_server.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_diag.dir/build.make CMakeFiles/ara_diag.dir/ara/diag/diag_server.cpp.i
+.PHONY : ara/diag/diag_server.cpp.i
+
+ara/diag/diag_server.s: ara/diag/diag_server.cpp.s
+.PHONY : ara/diag/diag_server.s
+
+# target to generate assembly for a file
+ara/diag/diag_server.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_diag.dir/build.make CMakeFiles/ara_diag.dir/ara/diag/diag_server.cpp.s
+.PHONY : ara/diag/diag_server.cpp.s
+
+can_gateway/src/gateway.o: can_gateway/src/gateway.cpp.o
+.PHONY : can_gateway/src/gateway.o
+
+# target to build an object file
+can_gateway/src/gateway.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/can_gateway.dir/build.make CMakeFiles/can_gateway.dir/can_gateway/src/gateway.cpp.o
+.PHONY : can_gateway/src/gateway.cpp.o
+
+can_gateway/src/gateway.i: can_gateway/src/gateway.cpp.i
+.PHONY : can_gateway/src/gateway.i
+
+# target to preprocess a source file
+can_gateway/src/gateway.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/can_gateway.dir/build.make CMakeFiles/can_gateway.dir/can_gateway/src/gateway.cpp.i
+.PHONY : can_gateway/src/gateway.cpp.i
+
+can_gateway/src/gateway.s: can_gateway/src/gateway.cpp.s
+.PHONY : can_gateway/src/gateway.s
+
+# target to generate assembly for a file
+can_gateway/src/gateway.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/can_gateway.dir/build.make CMakeFiles/can_gateway.dir/can_gateway/src/gateway.cpp.s
+.PHONY : can_gateway/src/gateway.cpp.s
+
+can_gateway/src/main.o: can_gateway/src/main.cpp.o
+.PHONY : can_gateway/src/main.o
+
+# target to build an object file
+can_gateway/src/main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/can_gateway.dir/build.make CMakeFiles/can_gateway.dir/can_gateway/src/main.cpp.o
+.PHONY : can_gateway/src/main.cpp.o
+
+can_gateway/src/main.i: can_gateway/src/main.cpp.i
+.PHONY : can_gateway/src/main.i
+
+# target to preprocess a source file
+can_gateway/src/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/can_gateway.dir/build.make CMakeFiles/can_gateway.dir/can_gateway/src/main.cpp.i
+.PHONY : can_gateway/src/main.cpp.i
+
+can_gateway/src/main.s: can_gateway/src/main.cpp.s
+.PHONY : can_gateway/src/main.s
+
+# target to generate assembly for a file
+can_gateway/src/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/can_gateway.dir/build.make CMakeFiles/can_gateway.dir/can_gateway/src/main.cpp.s
+.PHONY : can_gateway/src/main.cpp.s
+
 com/someip_binding.o: com/someip_binding.cpp.o
 .PHONY : com/someip_binding.o
 
@@ -851,6 +1001,54 @@ com/someip_binding.s: com/someip_binding.cpp.s
 com/someip_binding.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/someip_binding.dir/build.make CMakeFiles/someip_binding.dir/com/someip_binding.cpp.s
 .PHONY : com/someip_binding.cpp.s
+
+diagnostics/provider/generic_provider.o: diagnostics/provider/generic_provider.cpp.o
+.PHONY : diagnostics/provider/generic_provider.o
+
+# target to build an object file
+diagnostics/provider/generic_provider.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/function_diag_provider.dir/build.make CMakeFiles/function_diag_provider.dir/diagnostics/provider/generic_provider.cpp.o
+.PHONY : diagnostics/provider/generic_provider.cpp.o
+
+diagnostics/provider/generic_provider.i: diagnostics/provider/generic_provider.cpp.i
+.PHONY : diagnostics/provider/generic_provider.i
+
+# target to preprocess a source file
+diagnostics/provider/generic_provider.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/function_diag_provider.dir/build.make CMakeFiles/function_diag_provider.dir/diagnostics/provider/generic_provider.cpp.i
+.PHONY : diagnostics/provider/generic_provider.cpp.i
+
+diagnostics/provider/generic_provider.s: diagnostics/provider/generic_provider.cpp.s
+.PHONY : diagnostics/provider/generic_provider.s
+
+# target to generate assembly for a file
+diagnostics/provider/generic_provider.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/function_diag_provider.dir/build.make CMakeFiles/function_diag_provider.dir/diagnostics/provider/generic_provider.cpp.s
+.PHONY : diagnostics/provider/generic_provider.cpp.s
+
+diagnostics/uds/uds.o: diagnostics/uds/uds.cpp.o
+.PHONY : diagnostics/uds/uds.o
+
+# target to build an object file
+diagnostics/uds/uds.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/function_diag_provider.dir/build.make CMakeFiles/function_diag_provider.dir/diagnostics/uds/uds.cpp.o
+.PHONY : diagnostics/uds/uds.cpp.o
+
+diagnostics/uds/uds.i: diagnostics/uds/uds.cpp.i
+.PHONY : diagnostics/uds/uds.i
+
+# target to preprocess a source file
+diagnostics/uds/uds.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/function_diag_provider.dir/build.make CMakeFiles/function_diag_provider.dir/diagnostics/uds/uds.cpp.i
+.PHONY : diagnostics/uds/uds.cpp.i
+
+diagnostics/uds/uds.s: diagnostics/uds/uds.cpp.s
+.PHONY : diagnostics/uds/uds.s
+
+# target to generate assembly for a file
+diagnostics/uds/uds.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/function_diag_provider.dir/build.make CMakeFiles/function_diag_provider.dir/diagnostics/uds/uds.cpp.s
+.PHONY : diagnostics/uds/uds.cpp.s
 
 em/execution_manager.o: em/execution_manager.cpp.o
 .PHONY : em/execution_manager.o
@@ -1092,6 +1290,78 @@ phm/src/supervision_client.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ara_phm.dir/build.make CMakeFiles/ara_phm.dir/phm/src/supervision_client.cpp.s
 .PHONY : phm/src/supervision_client.cpp.s
 
+stubs/cloud_stub.o: stubs/cloud_stub.cpp.o
+.PHONY : stubs/cloud_stub.o
+
+# target to build an object file
+stubs/cloud_stub.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_stub.dir/build.make CMakeFiles/cloud_stub.dir/stubs/cloud_stub.cpp.o
+.PHONY : stubs/cloud_stub.cpp.o
+
+stubs/cloud_stub.i: stubs/cloud_stub.cpp.i
+.PHONY : stubs/cloud_stub.i
+
+# target to preprocess a source file
+stubs/cloud_stub.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_stub.dir/build.make CMakeFiles/cloud_stub.dir/stubs/cloud_stub.cpp.i
+.PHONY : stubs/cloud_stub.cpp.i
+
+stubs/cloud_stub.s: stubs/cloud_stub.cpp.s
+.PHONY : stubs/cloud_stub.s
+
+# target to generate assembly for a file
+stubs/cloud_stub.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cloud_stub.dir/build.make CMakeFiles/cloud_stub.dir/stubs/cloud_stub.cpp.s
+.PHONY : stubs/cloud_stub.cpp.s
+
+stubs/position_stub.o: stubs/position_stub.cpp.o
+.PHONY : stubs/position_stub.o
+
+# target to build an object file
+stubs/position_stub.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/position_stub.dir/build.make CMakeFiles/position_stub.dir/stubs/position_stub.cpp.o
+.PHONY : stubs/position_stub.cpp.o
+
+stubs/position_stub.i: stubs/position_stub.cpp.i
+.PHONY : stubs/position_stub.i
+
+# target to preprocess a source file
+stubs/position_stub.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/position_stub.dir/build.make CMakeFiles/position_stub.dir/stubs/position_stub.cpp.i
+.PHONY : stubs/position_stub.cpp.i
+
+stubs/position_stub.s: stubs/position_stub.cpp.s
+.PHONY : stubs/position_stub.s
+
+# target to generate assembly for a file
+stubs/position_stub.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/position_stub.dir/build.make CMakeFiles/position_stub.dir/stubs/position_stub.cpp.s
+.PHONY : stubs/position_stub.cpp.s
+
+stubs/ui_stub.o: stubs/ui_stub.cpp.o
+.PHONY : stubs/ui_stub.o
+
+# target to build an object file
+stubs/ui_stub.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ui_stub.dir/build.make CMakeFiles/ui_stub.dir/stubs/ui_stub.cpp.o
+.PHONY : stubs/ui_stub.cpp.o
+
+stubs/ui_stub.i: stubs/ui_stub.cpp.i
+.PHONY : stubs/ui_stub.i
+
+# target to preprocess a source file
+stubs/ui_stub.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ui_stub.dir/build.make CMakeFiles/ui_stub.dir/stubs/ui_stub.cpp.i
+.PHONY : stubs/ui_stub.cpp.i
+
+stubs/ui_stub.s: stubs/ui_stub.cpp.s
+.PHONY : stubs/ui_stub.s
+
+# target to generate assembly for a file
+stubs/ui_stub.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ui_stub.dir/build.make CMakeFiles/ui_stub.dir/stubs/ui_stub.cpp.s
+.PHONY : stubs/ui_stub.cpp.s
+
 tests/test_logging.o: tests/test_logging.cpp.o
 .PHONY : tests/test_logging.o
 
@@ -1206,8 +1476,12 @@ help:
 	@echo "... NightlyTest"
 	@echo "... NightlyUpdate"
 	@echo "... ara_com_adapter_someip"
+	@echo "... ara_diag"
 	@echo "... ara_phm"
+	@echo "... can_gateway"
+	@echo "... cloud_stub"
 	@echo "... execution_manager"
+	@echo "... function_diag_provider"
 	@echo "... gmock"
 	@echo "... gmock_main"
 	@echo "... gtest"
@@ -1219,9 +1493,11 @@ help:
 	@echo "... persistency_tests"
 	@echo "... phm_core"
 	@echo "... phm_supervisor_tests"
+	@echo "... position_stub"
 	@echo "... sensor_provider"
 	@echo "... someip_binding"
 	@echo "... speed_client"
+	@echo "... ui_stub"
 	@echo "... apps/sensor_provider.o"
 	@echo "... apps/sensor_provider.i"
 	@echo "... apps/sensor_provider.s"
@@ -1231,9 +1507,24 @@ help:
 	@echo "... ara/com/someip_adapter.o"
 	@echo "... ara/com/someip_adapter.i"
 	@echo "... ara/com/someip_adapter.s"
+	@echo "... ara/diag/diag_server.o"
+	@echo "... ara/diag/diag_server.i"
+	@echo "... ara/diag/diag_server.s"
+	@echo "... can_gateway/src/gateway.o"
+	@echo "... can_gateway/src/gateway.i"
+	@echo "... can_gateway/src/gateway.s"
+	@echo "... can_gateway/src/main.o"
+	@echo "... can_gateway/src/main.i"
+	@echo "... can_gateway/src/main.s"
 	@echo "... com/someip_binding.o"
 	@echo "... com/someip_binding.i"
 	@echo "... com/someip_binding.s"
+	@echo "... diagnostics/provider/generic_provider.o"
+	@echo "... diagnostics/provider/generic_provider.i"
+	@echo "... diagnostics/provider/generic_provider.s"
+	@echo "... diagnostics/uds/uds.o"
+	@echo "... diagnostics/uds/uds.i"
+	@echo "... diagnostics/uds/uds.s"
 	@echo "... em/execution_manager.o"
 	@echo "... em/execution_manager.i"
 	@echo "... em/execution_manager.s"
@@ -1264,6 +1555,15 @@ help:
 	@echo "... phm/src/supervision_client.o"
 	@echo "... phm/src/supervision_client.i"
 	@echo "... phm/src/supervision_client.s"
+	@echo "... stubs/cloud_stub.o"
+	@echo "... stubs/cloud_stub.i"
+	@echo "... stubs/cloud_stub.s"
+	@echo "... stubs/position_stub.o"
+	@echo "... stubs/position_stub.i"
+	@echo "... stubs/position_stub.s"
+	@echo "... stubs/ui_stub.o"
+	@echo "... stubs/ui_stub.i"
+	@echo "... stubs/ui_stub.s"
 	@echo "... tests/test_logging.o"
 	@echo "... tests/test_logging.i"
 	@echo "... tests/test_logging.s"

@@ -208,6 +208,59 @@ target_link_libraries(speed_client PRIVATE
 )
 
 # ============================================================================
+#                       Diagnostics / CAN
+# ============================================================================
+
+# Diagnostics provider lib
+add_library(function_diag_provider
+  diagnostics/provider/ifunction_diag_provider.hpp
+  diagnostics/provider/generic_provider.hpp
+  diagnostics/provider/generic_provider.cpp
+  diagnostics/uds/uds.hpp
+  diagnostics/uds/uds.cpp
+)
+target_include_directories(function_diag_provider
+  PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}         # so you can #include "diagnostics/..."
+)
+
+# Diagnostics transport executable
+# Self-contained facade (only this file)
+add_library(ara_diag
+  ara/diag/diag_server.cpp
+)
+target_include_directories(ara_diag PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_features(ara_diag PUBLIC cxx_std_17)
+
+
+# CAN bus API (header-only interface)
+add_library(function_bus_api INTERFACE)
+target_include_directories(function_bus_api
+  INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/can_gateway/include
+)
+
+# CAN gateway executable
+add_executable(can_gateway
+  can_gateway/src/gateway.cpp
+  can_gateway/src/main.cpp
+)
+target_include_directories(can_gateway
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/can_gateway/include
+)
+target_link_libraries(can_gateway PRIVATE function_bus_api)
+
+# ============================================================================
+#                           Stubs / Mocks
+# ============================================================================
+
+add_executable(ui_stub stubs/ui_stub.cpp)
+add_executable(position_stub stubs/position_stub.cpp)
+add_executable(cloud_stub stubs/cloud_stub.cpp)
+
+
+# ============================================================================
 #                                 TESTS
 # ============================================================================
 

@@ -1,0 +1,19 @@
+{
+  "iface": "vcan0",
+  "tx": {
+    "LightPattern": {
+      "can_id": 512,
+      "dlc": 1,
+      "encoding": "u8_direct"   
+    },
+    "ActuatorCommand": {
+      "can_id": 513,
+      "dlc": 1,
+      "encoding": "u8_direct"
+    }
+  },
+  "rx": {
+    "LineA": { "can_id": 768, "bit": 0 },   
+    "LineB": { "can_id": 768, "bit": 1 }
+  }
+}

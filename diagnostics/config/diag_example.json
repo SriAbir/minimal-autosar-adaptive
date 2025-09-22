@@ -1,0 +1,11 @@
+{
+  "dids": {
+    "HasTrigger": 4660,
+    "TriggerCause": 4661
+  },
+  "routines": {
+    "ResetTrigger": 4096
+  },
+  "bind": "127.0.0.1",
+  "port": 13400
+}

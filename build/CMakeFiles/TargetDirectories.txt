@@ -8,6 +8,12 @@
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/execution_manager.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/sensor_provider.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/speed_client.dir
+/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/function_diag_provider.dir
+/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/ara_diag.dir
+/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/can_gateway.dir
+/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/ui_stub.dir
+/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/position_stub.dir
+/home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/cloud_stub.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/Experimental.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/Nightly.dir
 /home/benkewille/src/minimal-autosar-adaptive/build/CMakeFiles/Continuous.dir
