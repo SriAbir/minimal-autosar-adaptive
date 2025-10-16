@@ -1,2 +1,0 @@
-/usr/bin/ar qc libsomeip_binding.a CMakeFiles/someip_binding.dir/com/someip_binding.cpp.o
-/usr/bin/ranlib libsomeip_binding.a
