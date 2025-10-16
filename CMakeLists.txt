@@ -216,8 +216,8 @@ add_library(function_diag_provider
   diagnostics/provider/ifunction_diag_provider.hpp
   diagnostics/provider/generic_provider.hpp
   diagnostics/provider/generic_provider.cpp
-  diagnostics/uds/uds.hpp
-  diagnostics/uds/uds.cpp
+  #diagnostics/uds/uds.hpp
+  #diagnostics/uds/uds.cpp
 )
 target_include_directories(function_diag_provider
   PUBLIC
