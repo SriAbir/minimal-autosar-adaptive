@@ -9,31 +9,86 @@
 namespace ara::com {
 
 class SomeipAdapter final : public IAdapter {
-public:
-  // ---- Init / shutdown -----------------------------------------------------
-  Errc init(const std::string& app) override {
-    std::call_once(once_, [&]{ someip::init(app); });
-    return Errc::kOk;
-  }
-  void shutdown() override { someip::shutdown(); }
+  public:
+    // ---- Init / shutdown -----------------------------------------------------
+    Errc init(const std::string& app) override {
+      std::call_once(once_, [&]{ someip::init(app); });
+      return Errc::kOk;
+    }
+    void shutdown() override { someip::shutdown(); }
 
-  // ---- Discovery / attach --------------------------------------------------
-  Errc request_service(ServiceId s, InstanceId i) override {
-    someip::request_service(s, i);
-    return Errc::kOk;
-  }
-  void release_service(ServiceId s, InstanceId i) override {
-    someip::release_service(s, i); // implement as no-op if not in binding yet
+    // ---- Discovery / attach --------------------------------------------------
+    Errc request_service(ServiceId s, InstanceId i) override {
+      someip::request_service(s, i);
+      return Errc::kOk;
+    }
+    void release_service(ServiceId s, InstanceId i) override {
+      someip::release_service(s, i); // implement as no-op if not in binding yet
+    }
+
+    // ---- RPC -----------------------------------------------------------------
+    Errc send_request(ServiceId s, InstanceId i, MethodId m,
+                      const std::string& payload, Resp cb) override {
+      // fire-and-forget for now; upgrade when binding returns replies
+      someip::send_request(s, i, m, payload);
+      if (cb) cb(Errc::kOk, {});
+      return Errc::kOk;
+    }
+
+    // Key for per-method RPC handlers
+    struct RpcKey { ServiceId s; InstanceId i; MethodId m; };
+    struct RpcKeyHash {
+      size_t operator()(const RpcKey& k) const noexcept {
+        return (size_t(k.s) << 32) ^ (size_t(k.i) << 16) ^ size_t(k.m);
+      }
+    };
+    friend bool operator==(const RpcKey& a, const RpcKey& b) {
+      return a.s==b.s && a.i==b.i && a.m==b.m;
+    };
+  using HandlerMap = std::unordered_map<std::uint64_t, IAdapter::RpcHandler>;
+  std::unordered_map<RpcKey, HandlerMap, RpcKeyHash> rpc_;
+
+  SubscriptionToken register_method(ServiceId s, InstanceId i, MethodId m, IAdapter::RpcHandler h) override {
+    std::lock_guard lk(mu_);
+    const auto tok = SubscriptionToken{++next_token_};
+    rpc_[RpcKey{s,i,m}][tok.value] = std::move(h);
+    ensure_rpc_dispatcher();
+    return tok;
   }
 
-  // ---- RPC -----------------------------------------------------------------
-  Errc send_request(ServiceId s, InstanceId i, MethodId m,
-                    const std::string& payload, Resp cb) override {
-    // fire-and-forget for now; upgrade when binding returns replies
-    someip::send_request(s, i, m, payload);
-    if (cb) cb(Errc::kOk, {});
-    return Errc::kOk;
+  void unregister_method(SubscriptionToken t) override {
+    std::lock_guard lk(mu_);
+    for (auto it = rpc_.begin(); it != rpc_.end(); ) {
+      it->second.erase(t.value);
+      if (it->second.empty()) it = rpc_.erase(it);
+      else ++it;
+    }
   }
+
+  void ensure_rpc_dispatcher() {
+    std::call_once(rpc_once_, [&]{
+      someip::register_rpc_handler(
+        [this](uint16_t s, uint16_t i, uint16_t m,
+              const std::string& payload,
+              std::shared_ptr<vsomeip::message> req_msg) {
+          IAdapter::RpcHandler handler;
+          {
+            std::lock_guard lk(mu_);
+            auto it = rpc_.find(RpcKey{(ServiceId)s,(InstanceId)i,(MethodId)m});
+            if (it != rpc_.end() && !it->second.empty())
+              handler = it->second.begin()->second;
+          }
+          if (!handler) return;
+
+          auto responder = [req_msg](Errc /*ec*/, const std::string& bytes){
+            someip::send_response(req_msg, bytes);
+          };
+          try { handler(payload, std::move(responder)); }
+          catch (...) { responder(Errc::kTransportError, {}); }
+        });
+    });
+  }
+
 
   // ---- Events (client) -----------------------------------------------------
   // Updated to handle problem with someip implicitly subscribing to all events
@@ -81,22 +136,7 @@ public:
       }
     }
   }
-  void ensure_dispatcher_installed() {
-    std::call_once(dispatch_once_, [&]{
-      someip::register_notification_handler(
-        [this](uint16_t sid, uint16_t iid, uint16_t evid,
-              const std::string& payload,
-              std::shared_ptr<vsomeip::message> /*unused*/) {
-          std::lock_guard lk(mu_);
-          auto it = subs_.find(Key{sid, iid, evid});
-          if (it == subs_.end()) return;            // no subscribers for this event → drop
-          for (auto& [_, cb] : it->second) if (cb) cb(payload);
-        }
-      );
-    });
-  }
-
-
+  
   // ---- Server side ---------------------------------------------------------
   Errc offer_service(ServiceId s, InstanceId i) override {
     // If you add a 2-arg overload in the binding, call that instead.
@@ -144,22 +184,23 @@ private:
   struct SubMeta { ServiceId s; InstanceId i; EventGroupId g; EventId e; };
 
   void ensure_dispatcher_installed() {
-  std::call_once(dispatch_once_, [&]{
-    someip::register_notification_handler(
-      [this](uint16_t sid, uint16_t iid, uint16_t evid,
-             const std::string& payload,
-             std::shared_ptr<vsomeip::message> /*unused*/) {
-        std::lock_guard lk(mu_);
-        auto it = subs_.find(Key{sid, iid, evid});
-        if (it == subs_.end()) return;
-        for (auto& [_, cb] : it->second) if (cb) cb(payload);
-      }
-    );
-  });
-}
+    std::call_once(dispatch_once_, [&]{
+      someip::register_notification_handler(
+        [this](uint16_t sid, uint16_t iid, uint16_t evid,
+              const std::string& payload,
+              std::shared_ptr<vsomeip::message> /*unused*/) {
+          std::lock_guard lk(mu_);
+          auto it = subs_.find(Key{sid, iid, evid});
+          if (it == subs_.end()) return;
+          for (auto& [_, cb] : it->second) if (cb) cb(payload);
+        }
+      );
+    });
+  }
 
+  
 
-  std::once_flag once_, dispatch_once_;
+  std::once_flag once_, dispatch_once_, rpc_once_;
   std::mutex mu_;
   std::atomic_uint64_t next_token_{0};
 

@@ -44,6 +44,16 @@ struct IAdapter {
   using AvCb = std::function<void(Availability)>;
   virtual SubscriptionToken on_availability(ServiceId s, InstanceId i, AvCb cb) = 0;
   virtual void remove_availability_handler(SubscriptionToken) = 0;
+
+  //Rpc methods
+  using RpcResponder = std::function<void(Errc, const std::string&)>;
+  using RpcHandler   = std::function<void(const std::string& req_payload,
+                                          RpcResponder respond)>;
+
+  virtual SubscriptionToken register_method(ServiceId, InstanceId, MethodId,
+                                            RpcHandler) = 0;
+  virtual void unregister_method(SubscriptionToken) = 0;
+
 };
 
 // A trivial runtime holder that all Proxies/Skeletons share
@@ -92,7 +102,7 @@ public:
     );
   }
 
-  // Call a method (async)
+  // Call a method (async) - CLIENT SIDE
   template<typename M>
   Errc Call(const typename M::Request& req,
             std::function<void(Errc, typename M::Response)> on_done) {
@@ -126,6 +136,26 @@ public:
       Desc::kServiceId, Desc::kInstanceId, E::kId,
       Codec<typename E::Payload>::serialize(v));
   }
+
+  // Register method - SERVER SIDE
+  // Bind a method handler — SERVER SIDE
+  template<typename M>
+  SubscriptionToken Bind(
+      std::function<void(const typename M::Request&,
+                        std::function<void(Errc, const typename M::Response&)>)> fn) {
+    return rt_.adapter().register_method(
+      Desc::kServiceId, Desc::kInstanceId, M::kId,
+      [fn = std::move(fn)](const std::string& req_bytes, IAdapter::RpcResponder respond_bytes){
+        using Req = typename M::Request;
+        using Res = typename M::Response;
+        Req req = Codec<Req>::deserialize(req_bytes);
+        fn(req, [respond_bytes](Errc ec, const Res& res){
+          respond_bytes(ec, (ec==Errc::kOk) ? Codec<Res>::serialize(res) : std::string{});
+        });
+      }
+    );
+  }
+
 
 private:
   Runtime& rt_;
