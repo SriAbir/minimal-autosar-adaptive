@@ -1,3 +1,4 @@
+//com/someip_binding.cpp
 #include "someip_binding.hpp"
 #include <iostream>
 #include <vector>
@@ -11,6 +12,14 @@
 #include <sstream>
 #include <cstdlib>
 
+namespace {
+   inline std::set<vsomeip::eventgroup_t>
+  to_group_set(std::initializer_list<uint16_t> groups) {
+    std::set<vsomeip::eventgroup_t> s;
+    for (auto g : groups) s.insert(static_cast<vsomeip::eventgroup_t>(g));
+    return s;
+  }
+}
 
 namespace someip {
 
@@ -49,7 +58,26 @@ static inline std::uint64_t make_key(uint16_t s, uint16_t i, uint16_t e) {
 static std::thread g_vsomeip_thread;
 
 
+// Event handling additions
 
+static inline vsomeip::reliability_type_e to_rel(bool reliable) {
+  return reliable
+    ? vsomeip::reliability_type_e::RT_RELIABLE
+    : vsomeip::reliability_type_e::RT_UNRELIABLE;
+}
+
+void request_event(uint16_t s, uint16_t i, uint16_t e,
+                   std::initializer_list<uint16_t> groups,
+                   bool reliable) {
+  auto gs = to_group_set(groups);
+
+  // vsomeip: request_event(service, instance, event, groupset, reliable)
+  app->request_event(s, i, e, gs, vsomeip::event_type_e::ET_EVENT, to_rel(reliable));
+}
+
+void release_event(uint16_t s, uint16_t i, uint16_t e) {
+  app->release_event(s, i, e);
+}
 
 void enable_auto_subscribe(bool enable, uint16_t event_group_id) {
     g_auto_subscribe.store(enable, std::memory_order_relaxed);
@@ -166,7 +194,7 @@ void init(const std::string& app_name) {
                 try {
                     std::set<vsomeip::eventgroup_t> groups{eg};
                     app->request_event(svc, inst, evt, groups,
-                                    vsomeip::event_type_e::ET_FIELD,
+                                    vsomeip::event_type_e::ET_EVENT,
                                     vsomeip::reliability_type_e::RT_RELIABLE);
                     app->subscribe(svc, inst, eg);
                     std::cout << "[someip] auto-requested 0x" << std::hex << evt
@@ -207,7 +235,7 @@ void offer_service(uint16_t service_id, uint16_t instance_id, uint16_t event_id,
             instance_id,
             event_id,
             event_groups,
-            vsomeip::event_type_e::ET_FIELD,
+            vsomeip::event_type_e::ET_EVENT,
             std::chrono::milliseconds::zero(),
             false, // not change resilient
             true   // reliable
@@ -221,21 +249,12 @@ void offer_service(uint16_t service_id, uint16_t instance_id, uint16_t event_id,
 }
 
 void subscribe_to_event(uint16_t service_id, uint16_t instance_id, uint16_t event_group_id, uint16_t event_id) {
+    
     std::set<vsomeip::eventgroup_t> event_groups = { event_group_id };
-
-    app->request_event(
-        service_id,
-        instance_id,
-        event_id,
-        event_groups,
-        vsomeip::event_type_e::ET_FIELD,
-        vsomeip::reliability_type_e::RT_RELIABLE
-    );
 
     app->subscribe(service_id, instance_id, event_group_id);
 
-    std::cout << "[someip] Requested event 0x" << std::hex << event_id
-              << " and subscribed to group 0x" << event_group_id << std::endl;
+    std::cout << "[someip] Subscribed to group 0x" << std::hex << event_group_id << std::endl;
 }
 
 void request_service(uint16_t service_id, uint16_t instance_id) {
@@ -258,7 +277,7 @@ void send_notification(uint16_t service_id, uint16_t instance_id, uint16_t event
                 instance_id,
                 event_id,
                 egs,
-                vsomeip::event_type_e::ET_FIELD,
+                vsomeip::event_type_e::ET_EVENT,
                 std::chrono::milliseconds::zero(),
                 false, // not change resilient
                 true   // reliable
@@ -330,9 +349,6 @@ void stop_offer_service(uint16_t s, uint16_t i) {
 }
 void unsubscribe_event(uint16_t s, uint16_t i, uint16_t g, uint16_t e) {
     if (!app) return;
-    try {
-        app->release_event(s, i, e);
-    } catch (...) {}
     try {
         app->unsubscribe(s, i, g);
     } catch (...) {}

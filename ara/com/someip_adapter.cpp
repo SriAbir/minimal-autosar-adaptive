@@ -36,36 +36,66 @@ public:
   }
 
   // ---- Events (client) -----------------------------------------------------
+  // Updated to handle problem with someip implicitly subscribing to all events
   SubscriptionToken subscribe_event(ServiceId s, InstanceId i,
                                     EventGroupId g, EventId e,
                                     EventCb cb) override {
     const auto token = SubscriptionToken{++next_token_};
+
     {
       std::lock_guard lk(mu_);
       subs_[Key{s,i,e}][token.value] = std::move(cb);
       token_meta_[token.value] = SubMeta{s,i,g,e};
     }
+
     ensure_dispatcher_installed();
+
+    // CHANGE: explicitly request this event before subscribing
+    someip::request_event(s, i, e, {g}, /*reliable*/true);
+
+    // Subscribe only to the requested group for this event
     someip::subscribe_to_event(s, i, g, e);
+
     return token;
   }
 
   void unsubscribe_event(SubscriptionToken t) override {
-    std::lock_guard lk(mu_);
-    auto it_meta = token_meta_.find(t.value);
-    if (it_meta == token_meta_.end()) return;
-    const auto meta = it_meta->second;
-    token_meta_.erase(it_meta);
+    SubMeta meta{};
+    {
+      std::lock_guard lk(mu_);
+      auto it_meta = token_meta_.find(t.value);
+      if (it_meta == token_meta_.end()) return;
+      meta = it_meta->second;
+      token_meta_.erase(it_meta);
 
-    auto it = subs_.find(Key{meta.s, meta.i, meta.e});
-    if (it == subs_.end()) return;
-    it->second.erase(t.value);
-    if (it->second.empty()) {
-      subs_.erase(it);
-      // tell the binding when the last subscriber is gone
-      someip::unsubscribe_event(meta.s, meta.i, meta.g, meta.e);
+      auto it = subs_.find(Key{meta.s, meta.i, meta.e});
+      if (it != subs_.end()) {
+        it->second.erase(t.value);
+        if (it->second.empty()) {
+          subs_.erase(it);
+          // Last subscriber gone: tear everything down for this event
+          someip::unsubscribe_event(meta.s, meta.i, meta.g, meta.e);
+          // CHANGE: release event so vsomeip stops routing frames to us
+          someip::release_event(meta.s, meta.i, meta.e);
+        }
+      }
     }
   }
+  void ensure_dispatcher_installed() {
+    std::call_once(dispatch_once_, [&]{
+      someip::register_notification_handler(
+        [this](uint16_t sid, uint16_t iid, uint16_t evid,
+              const std::string& payload,
+              std::shared_ptr<vsomeip::message> /*unused*/) {
+          std::lock_guard lk(mu_);
+          auto it = subs_.find(Key{sid, iid, evid});
+          if (it == subs_.end()) return;            // no subscribers for this event → drop
+          for (auto& [_, cb] : it->second) if (cb) cb(payload);
+        }
+      );
+    });
+  }
+
 
   // ---- Server side ---------------------------------------------------------
   Errc offer_service(ServiceId s, InstanceId i) override {

@@ -1,3 +1,4 @@
+//com/someip_binding.hpp
 #pragma once
 #include <string>
 #include <functional>
@@ -9,6 +10,10 @@ void init(const std::string& app_name);
 //void offer_service(uint16_t service_id, uint16_t instance_id);
 void offer_service(uint16_t service_id, uint16_t instance_id, uint16_t event_id, uint16_t event_group_id);
 void subscribe_to_event(uint16_t service_id, uint16_t instance_id, uint16_t event_group_id, uint16_t event_id);
+
+// Adding functions to handle events. Fixing problem of implicitly subscribing to all events
+void request_event(uint16_t s, uint16_t i, uint16_t e, std::initializer_list<uint16_t> groups, bool reliable);
+void release_event(uint16_t s, uint16_t i, uint16_t e);
 
 void request_service(uint16_t service_id, uint16_t instance_id);
 void send_notification(uint16_t service_id, uint16_t instance_id, uint16_t event_id, const std::string& payload);
@@ -62,8 +67,6 @@ using AvailabilityToken = std::uint64_t;
 
 AvailabilityToken register_availability_handler(AvailabilityHandler cb);
 void remove_availability_handler(AvailabilityToken tok);
-
-
 
 void shutdown();
 }
